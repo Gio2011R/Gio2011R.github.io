@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GymRank</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #f2f0eb;
+    --surface: #ece9e3;
+    --line:    #d4d0c8;
+    --muted:   #999690;
+    --text:    #2a2826;
+    --head:    #1a1816;
+    --bronze:  #a0693a;
+    --silver:  #787878;
+    --gold:    #b8960a;
+    --plat:    #2a7a6a;
+    --diamond: #5a3a9a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .shell { max-width: 860px; margin: 0 auto; padding: 0 32px; }
+
+  /* header */
+  header { padding: 48px 0 0; margin-bottom: 40px; }
+
+  .header-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--head);
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+    color: var(--head);
+    line-height: 1;
+  }
+
+  h1 em { font-style: italic; color: var(--muted); }
+
+  .bw-pill {
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    padding-bottom: 2px;
+    border-bottom: 1px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    letter-spacing: 0.02em;
+  }
+
+  .bw-pill:hover { color: var(--head); border-color: var(--head); }
+  .bw-pill strong { color: var(--head); }
+
+  /* nav */
+  nav { display: flex; gap: 28px; margin-bottom: 40px; }
+
+  nav button {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0 0 3px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-bottom: 1px solid transparent;
+    transition: color 0.15s;
+  }
+
+  nav button:hover { color: var(--text); }
+  nav button.active { color: var(--head); border-color: var(--head); }
+
+  /* tabs */
+  .tab { display: none; }
+  .tab.active { display: block; }
+
+  /* rank filter */
+  .rank-filter { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+
+  .rf-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0 0 2px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-bottom: 1px solid transparent;
+    transition: color 0.15s;
+  }
+
+  .rf-btn:hover { color: var(--text); }
+  .rf-btn.active { color: var(--head); border-color: var(--head); }
+
+  /* ranks list */
+  .rank-list-head {
+    display: grid;
+    grid-template-columns: 1fr 90px 90px 90px 1fr;
+    gap: 16px;
+    padding-bottom: 10px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .rank-row {
+    display: grid;
+    grid-template-columns: 1fr 90px 90px 90px 1fr;
+    align-items: center;
+    gap: 16px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+    transition: padding 0.1s, background 0.1s;
+  }
+
+  .rank-row:first-child { border-top: 1px solid var(--line); }
+
+  .rank-row:hover {
+    background: var(--surface);
+    padding: 13px 10px;
+    margin: 0 -10px;
+  }
+
+  .rr-name { font-size: 13px; color: var(--head); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rr-stat { font-size: 12px; color: var(--muted); }
+  .rr-stat strong { color: var(--text); font-weight: 500; }
+  .rr-rank { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; text-align: right; }
+  .rr-bar { height: 2px; background: var(--line); }
+  .rr-bar-fill { height: 100%; transition: width 0.5s ease; }
+
+  /* rank colors */
+  .rk-unranked { color: var(--muted); }
+  .rk-bronze   { color: var(--bronze); }
+  .rk-silver   { color: var(--silver); }
+  .rk-gold     { color: var(--gold); }
+  .rk-platinum { color: var(--plat); }
+  .rk-diamond  { color: var(--diamond); }
+  .fill-unranked { background: var(--line); }
+  .fill-bronze   { background: var(--bronze); }
+  .fill-silver   { background: var(--silver); }
+  .fill-gold     { background: var(--gold); }
+  .fill-platinum { background: var(--plat); }
+  .fill-diamond  { background: var(--diamond); }
+
+  /* log form */
+  .log-wrap { max-width: 400px; }
+
+  .field { margin-bottom: 24px; }
+
+  .field label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .field select,
+  .field input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--line);
+    color: var(--head);
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    padding: 6px 0;
+    outline: none;
+    transition: border-color 0.15s;
+    appearance: none;
+    border-radius: 0;
+  }
+
+  .field select:focus,
+  .field input:focus { border-color: var(--head); }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+  .btn-primary {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--head);
+    color: var(--bg);
+    border: none;
+    padding: 12px 28px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .btn-primary:hover { opacity: 0.75; }
+
+  /* log result */
+  .log-result {
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+    display: none;
+  }
+
+  .log-result.show { display: block; }
+
+  .result-lift {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .result-rank {
+    font-family: 'DM Serif Display', serif;
+    font-size: 40px;
+    font-weight: 400;
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+
+  .result-stats { display: flex; gap: 32px; flex-wrap: wrap; }
+
+  .rs { display: flex; flex-direction: column; gap: 3px; }
+  .rs-label { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .rs-val { font-size: 14px; color: var(--head); }
+
+  .pr-tag {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 1px 7px;
+    margin-left: 10px;
+    vertical-align: middle;
+    position: relative;
+    top: -6px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* history */
+  .history-filter { margin-bottom: 28px; }
+
+  .history-filter select {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--line);
+    color: var(--head);
+    padding: 4px 0;
+    outline: none;
+    appearance: none;
+    min-width: 220px;
+    cursor: pointer;
+  }
+
+  .hist-table { width: 100%; border-collapse: collapse; }
+
+  .hist-table th {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 0 16px 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-weight: 400;
+  }
+
+  .hist-table td {
+    padding: 11px 16px 11px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  .hist-table tr:hover td { color: var(--head); }
+
+  /* settings */
+  .settings-wrap { max-width: 380px; }
+  .settings-section { margin-bottom: 44px; }
+
+  .settings-section h3 {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .btn-ghost {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 9px 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-right: 10px;
+    margin-bottom: 8px;
+  }
+
+  .btn-ghost:hover { border-color: var(--text); color: var(--head); }
+  .btn-ghost.danger { color: #b04040; border-color: #d4c0c0; }
+  .btn-ghost.danger:hover { border-color: #b04040; }
+
+  /* modal */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(242,240,235,0.88);
+    backdrop-filter: blur(3px);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg);
+    border: 1px solid var(--head);
+    padding: 36px 40px;
+    width: min(440px, 90vw);
+  }
+
+  .modal h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--head);
+    margin-bottom: 28px;
+  }
+
+  .modal-btns { display: flex; gap: 12px; margin-top: 24px; }
+
+  /* toast */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--head);
+    color: var(--bg);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    padding: 10px 20px;
+    z-index: 999;
+    pointer-events: none;
+    animation: tfade 2.5s ease forwards;
+    white-space: nowrap;
+  }
+
+  @keyframes tfade {
+    0%   { opacity:0; transform:translateX(-50%) translateY(8px); }
+    12%  { opacity:1; transform:translateX(-50%) translateY(0); }
+    80%  { opacity:1; }
+    100% { opacity:0; }
+  }
+
+  .empty { padding: 60px 0; color: var(--muted); font-size: 12px; letter-spacing: 0.02em; }
+
+  @media (max-width: 600px) {
+    .shell { padding: 0 20px; }
+    h1 { font-size: 28px; }
+    .rank-list-head,
+    .rank-row { grid-template-columns: 1fr 80px 88px; }
+    .rank-list-head > *:nth-child(3),
+    .rank-list-head > *:nth-child(5),
+    .rank-row > *:nth-child(3),
+    .rank-row > *:nth-child(5) { display: none; }
+    .field-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header>
+    <div class="header-row">
+      <h1>Gym<em>rank</em></h1>
+      <div class="bw-pill" id="bwDisplay" onclick="openBWModal()">
+        bodyweight: <strong id="bwVal">not set</strong>
+      </div>
+    </div>
+  </header>
+
+  <nav>
+    <button class="active" onclick="showTab('ranks',this)">Ranks</button>
+    <button onclick="showTab('log',this)">Log</button>
+    <button onclick="showTab('history',this)">History</button>
+    <button onclick="showTab('settings',this)">Settings</button>
+  </nav>
+
+  <!-- RANKS -->
+  <div id="tab-ranks" class="tab active">
+    <div class="rank-filter" id="catFilter"></div>
+    <div class="rank-list-head">
+      <div>Lift</div>
+      <div>1RM</div>
+      <div>BW ratio</div>
+      <div style="text-align:right">Rank</div>
+      <div>Progress</div>
+    </div>
+    <div id="rankList"></div>
+  </div>
+
+  <!-- LOG -->
+  <div id="tab-log" class="tab">
+    <div class="log-wrap">
+      <div class="field">
+        <label>Category</label>
+        <select id="logCat" onchange="populateLifts()">
+          <option value="">Select</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Lift</label>
+        <select id="logLift"><option value="">Select</option></select>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Weight (lbs)</label>
+          <input type="number" id="logW" placeholder="225" min="1" step="2.5">
+        </div>
+        <div class="field">
+          <label>Reps</label>
+          <input type="number" id="logR" placeholder="5" min="1" step="1">
+        </div>
+      </div>
+      <button class="btn-primary" onclick="logSet()">Log set</button>
+      <div class="log-result" id="logResult"></div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="tab-history" class="tab">
+    <div class="history-filter">
+      <select id="histSel" onchange="renderHistory()">
+        <option value="">All lifts</option>
+      </select>
+    </div>
+    <div id="histContent"></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="tab-settings" class="tab">
+    <div class="settings-wrap">
+      <div class="settings-section">
+        <h3>Bodyweight</h3>
+        <div class="field">
+          <label>Weight (lbs)</label>
+          <input type="number" id="setBW" placeholder="185" min="50" step="1">
+        </div>
+        <button class="btn-primary" onclick="saveBW()">Save</button>
+      </div>
+      <div class="settings-section">
+        <h3>Add custom lift</h3>
+        <div class="field">
+          <label>Name</label>
+          <input type="text" id="cName" placeholder="e.g. Cable Lateral Raise">
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Bronze (×BW)</label><input type="number" id="t1" placeholder="0.50" step="0.05"></div>
+          <div class="field"><label>Silver</label><input type="number" id="t2" placeholder="0.85" step="0.05"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Gold</label><input type="number" id="t3" placeholder="1.25" step="0.05"></div>
+          <div class="field"><label>Platinum</label><input type="number" id="t4" placeholder="1.65" step="0.05"></div>
+        </div>
+        <div class="field">
+          <label>Diamond</label>
+          <input type="number" id="t5" placeholder="2.00" step="0.05">
+        </div>
+        <button class="btn-primary" onclick="addCustom()">Add lift</button>
+      </div>
+      <div class="settings-section">
+        <h3>Data</h3>
+        <button class="btn-ghost" onclick="exportData()">Export JSON</button>
+        <button class="btn-ghost danger" onclick="clearData()">Clear all data</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="bwModal">
+  <div class="modal">
+    <h2>Set bodyweight</h2>
+    <div class="field">
+      <label>Weight (lbs)</label>
+      <input type="number" id="modalBW" placeholder="185" min="50" step="1">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-ghost" onclick="closeBWModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveBWModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const RANKS = ["Unranked","Bronze","Silver","Gold","Platinum","Diamond"];
+const RK = { Unranked:"rk-unranked", Bronze:"rk-bronze", Silver:"rk-silver", Gold:"rk-gold", Platinum:"rk-platinum", Diamond:"rk-diamond" };
+const FK = { Unranked:"fill-unranked", Bronze:"fill-bronze", Silver:"fill-silver", Gold:"fill-gold", Platinum:"fill-platinum", Diamond:"fill-diamond" };
+
+const CATS = {
+  "Barbell": {
+    "Squat":[.75,1.25,1.75,2.25,2.75],"Bench Press":[.50,1.00,1.50,2.00,2.50],
+    "Deadlift":[1.00,1.50,2.00,2.50,3.00],"Overhead Press":[.35,.65,1.00,1.35,1.75],
+    "Barbell Row":[.50,.85,1.25,1.65,2.00],"Romanian Deadlift":[.75,1.25,1.75,2.25,2.75],
+    "Sumo Deadlift":[1.00,1.50,2.00,2.55,3.10],"Trap Bar Deadlift":[1.00,1.55,2.10,2.65,3.20],
+    "Front Squat":[.60,1.00,1.50,2.00,2.50],"Low Bar Squat":[.85,1.35,1.85,2.35,2.85],
+    "Pause Squat":[.65,1.10,1.60,2.10,2.60],"Safety Bar Squat":[.70,1.20,1.70,2.20,2.70],
+    "Zercher Squat":[.60,1.00,1.45,1.90,2.40],"Good Morning":[.40,.70,1.00,1.35,1.70],
+    "Pendlay Row":[.50,.85,1.25,1.65,2.00],"Yates Row":[.55,.90,1.30,1.70,2.10],
+    "T-Bar Row":[.50,.85,1.25,1.65,2.00],"Barbell Curl":[.25,.45,.65,.85,1.10],
+    "Close Grip Bench":[.45,.85,1.30,1.75,2.20],"Incline Bench":[.40,.80,1.25,1.70,2.15],
+    "Decline Bench":[.50,.95,1.45,1.95,2.45],"Floor Press":[.45,.85,1.30,1.75,2.20],
+    "Push Press":[.45,.80,1.15,1.55,1.95],"Barbell Lunge":[.50,.90,1.35,1.80,2.25],
+    "Hip Thrust":[.75,1.25,1.75,2.25,2.75],"Power Clean":[.50,.85,1.20,1.60,2.00],
+    "Power Snatch":[.35,.60,.90,1.20,1.55],"Clean & Jerk":[.50,.85,1.20,1.60,2.00],
+    "Snatch":[.35,.65,.95,1.30,1.65],
+  },
+  "Dumbbell": {
+    "DB Bench Press":[.45,.90,1.35,1.80,2.25],"DB Incline Press":[.35,.75,1.15,1.55,2.00],
+    "DB Shoulder Press":[.30,.60,.90,1.25,1.60],"DB Row":[.25,.45,.70,.95,1.25],
+    "DB RDL":[.60,1.00,1.45,1.90,2.35],"DB Curl":[.15,.28,.42,.57,.75],
+    "DB Hammer Curl":[.15,.30,.45,.60,.80],"DB Lateral Raise":[.08,.15,.23,.32,.42],
+    "DB Front Raise":[.08,.15,.23,.32,.42],"DB Fly":[.20,.35,.55,.75,1.00],
+    "DB Shrug":[.40,.75,1.15,1.55,2.00],"DB Goblet Squat":[.30,.55,.80,1.10,1.40],
+    "DB Lunge":[.30,.55,.85,1.15,1.50],"DB Step Up":[.25,.50,.75,1.05,1.35],
+  },
+  "Cable / Machine": {
+    "Cable Row":[.50,.85,1.25,1.65,2.00],"Lat Pulldown":[.55,.90,1.30,1.70,2.10],
+    "Cable Curl":[.20,.38,.57,.77,1.00],"Tricep Pushdown":[.20,.38,.57,.77,1.00],
+    "Face Pull":[.20,.35,.55,.75,1.00],"Cable Fly":[.20,.38,.57,.77,1.00],
+    "Machine Chest Press":[.45,.90,1.35,1.80,2.25],"Machine Shoulder Press":[.35,.65,1.00,1.40,1.80],
+    "Machine Row":[.50,.85,1.25,1.65,2.10],"Leg Press":[1.25,2.00,2.75,3.50,4.25],
+    "Leg Extension":[.35,.60,.90,1.20,1.55],"Leg Curl":[.30,.55,.80,1.10,1.40],
+    "Seated Calf Raise":[.50,.90,1.35,1.80,2.25],"Standing Calf Raise":[.75,1.25,1.80,2.35,2.90],
+    "Hack Squat":[.75,1.25,1.80,2.35,2.90],"Pec Deck":[.30,.55,.85,1.15,1.50],
+    "Hip Abductor":[.35,.60,.90,1.20,1.55],"Hip Adductor":[.35,.60,.90,1.20,1.55],
+  },
+  "Bodyweight": {
+    "Pull-Up (added)":[0,.10,.30,.55,.85],"Chin-Up (added)":[0,.10,.30,.55,.85],
+    "Dip (added)":[0,.15,.35,.60,.90],"Push-Up (added)":[0,.10,.25,.45,.65],
+  },
+  "EZ Bar": {
+    "EZ Bar Curl":[.25,.45,.65,.85,1.10],"Skullcrusher":[.20,.38,.57,.77,1.00],
+    "Preacher Curl":[.20,.38,.55,.75,1.00],"Overhead Ext.":[.20,.38,.57,.77,1.00],
+  },
+  "Kettlebell": {
+    "KB Swing":[.25,.45,.65,.88,1.15],"KB Clean":[.20,.38,.57,.77,1.00],
+    "KB Snatch":[.15,.28,.43,.60,.80],"KB Press":[.15,.28,.43,.60,.80],
+    "KB Turkish Get-Up":[.10,.20,.33,.47,.63],"KB Goblet Squat":[.25,.45,.68,.93,1.20],
+  },
+};
+
+function D() { return JSON.parse(localStorage.getItem('gr')||'{"bw":null,"logs":[],"custom":{}}'); }
+function save(d) { localStorage.setItem('gr', JSON.stringify(d)); }
+function epley(w,r) { return r===1?w:w*(1+r/30); }
+
+function allLifts() {
+  const d=D(), out={};
+  for(const [cat,lifts] of Object.entries(CATS))
+    for(const [name,t] of Object.entries(lifts)) out[name]={t,cat};
+  for(const [name,t] of Object.entries(d.custom||{})) out[name]={t,cat:'Custom'};
+  return out;
+}
+
+function calcRank(orm,bw,t) {
+  const r=orm/bw; let idx=0;
+  for(let i=0;i<t.length;i++) if(r>=t[i]) idx=i+1;
+  return RANKS[idx];
+}
+
+function bestLog(name) {
+  const logs=D().logs.filter(l=>l.lift===name);
+  return logs.length?logs.reduce((b,l)=>l.orm>b.orm?l:b):null;
+}
+
+function progress(orm,bw,t) {
+  const r=orm/bw; let prev=0,next=null;
+  for(let i=0;i<t.length;i++) { if(r>=t[i]) prev=t[i]; else { next=t[i]; break; } }
+  if(next===null) return 100;
+  return Math.min(100,Math.max(0,(r-prev)/(next-prev)*100));
+}
+
+function showTab(id,btn) {
+  document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id==='ranks') renderRanks();
+  if(id==='log') initLog();
+  if(id==='history') initHistory();
+  if(id==='settings') { const d=D(); if(d.bw) document.getElementById('setBW').value=d.bw; }
+}
+
+let activeCat='All';
+
+function renderRanks() {
+  const d=D(), al=allLifts();
+  const cats=['All',...Object.keys(CATS)];
+  if(Object.keys(d.custom||{}).length) cats.push('Custom');
+
+  document.getElementById('catFilter').innerHTML=cats.map(c=>
+    `<button class="rf-btn ${activeCat===c?'active':''}" onclick="setCat('${c}')">${c}</button>`
+  ).join('');
+
+  const filtered=Object.entries(al).filter(([,i])=>activeCat==='All'||i.cat===activeCat);
+  const list=document.getElementById('rankList');
+
+  if(!d.bw) {
+    list.innerHTML=`<div class="empty">Set your bodyweight to see ranks. <span style="cursor:pointer;text-decoration:underline" onclick="openBWModal()">Set now →</span></div>`;
+    return;
+  }
+
+  list.innerHTML=filtered.map(([name,info])=>{
+    const best=bestLog(name);
+    const rank=best?calcRank(best.orm,d.bw,info.t):'Unranked';
+    const pct=best?progress(best.orm,d.bw,info.t):0;
+    return `
+      <div class="rank-row" onclick="quickLog('${name.replace(/'/g,"\\'")}')">
+        <div class="rr-name">${name}</div>
+        <div class="rr-stat"><strong>${best?best.orm.toFixed(1)+'&thinsp;lbs':'—'}</strong></div>
+        <div class="rr-stat"><strong>${best?(best.orm/d.bw).toFixed(2)+'×':'—'}</strong></div>
+        <div class="rr-rank ${RK[rank]}">${rank}</div>
+        <div class="rr-bar"><div class="rr-bar-fill ${FK[rank]}" style="width:${pct}%"></div></div>
+      </div>`;
+  }).join('');
+}
+
+function setCat(c) { activeCat=c; renderRanks(); }
+
+function quickLog(name) {
+  const info=allLifts()[name];
+  showTab('log',document.querySelector('nav button:nth-child(2)'));
+  setTimeout(()=>{
+    document.getElementById('logCat').value=info.cat;
+    populateLifts();
+    document.getElementById('logLift').value=name;
+  },30);
+}
+
+function initLog() {
+  const sel=document.getElementById('logCat');
+  const cats=[...Object.keys(CATS)];
+  if(Object.keys(D().custom||{}).length) cats.push('Custom');
+  sel.innerHTML='<option value="">Select</option>'+cats.map(c=>`<option>${c}</option>`).join('');
+  populateLifts();
+}
+
+function populateLifts() {
+  const cat=document.getElementById('logCat').value;
+  let names=[];
+  if(CATS[cat]) names=Object.keys(CATS[cat]);
+  else if(cat==='Custom') names=Object.keys(D().custom||{});
+  document.getElementById('logLift').innerHTML='<option value="">Select</option>'+names.map(n=>`<option>${n}</option>`).join('');
+}
+
+function logSet() {
+  const d=D();
+  if(!d.bw) { toast('Set your bodyweight first'); openBWModal(); return; }
+  const lift=document.getElementById('logLift').value;
+  const w=parseFloat(document.getElementById('logW').value);
+  const r=parseInt(document.getElementById('logR').value);
+  if(!lift) { toast('Select a lift'); return; }
+  if(!w||w<=0) { toast('Enter a valid weight'); return; }
+  if(!r||r<=0) { toast('Enter valid reps'); return; }
+  const info=allLifts()[lift];
+  const orm=epley(w,r);
+  const rank=calcRank(orm,d.bw,info.t);
+  const best=bestLog(lift);
+  const isPR=!best||orm>best.orm;
+  d.logs.push({lift,w,r,orm,date:new Date().toISOString()});
+  save(d);
+  const res=document.getElementById('logResult');
+  res.className='log-result show';
+  res.innerHTML=`
+    <div class="result-lift">${lift}</div>
+    <div class="result-rank ${RK[rank]}">${rank}${isPR?'<span class="pr-tag">PR</span>':''}</div>
+    <div class="result-stats">
+      <div class="rs"><div class="rs-label">Weight</div><div class="rs-val">${w} lbs</div></div>
+      <div class="rs"><div class="rs-label">Reps</div><div class="rs-val">${r}</div></div>
+      <div class="rs"><div class="rs-label">Est. 1RM</div><div class="rs-val">${orm.toFixed(1)} lbs</div></div>
+      <div class="rs"><div class="rs-label">BW ratio</div><div class="rs-val">${(orm/d.bw).toFixed(2)}×</div></div>
+    </div>`;
+  document.getElementById('logW').value='';
+  document.getElementById('logR').value='';
+}
+
+function initHistory() {
+  const used=[...new Set(D().logs.map(l=>l.lift))].sort();
+  document.getElementById('histSel').innerHTML='<option value="">All lifts</option>'+used.map(n=>`<option>${n}</option>`).join('');
+  renderHistory();
+}
+
+function renderHistory() {
+  const d=D(), filter=document.getElementById('histSel').value;
+  const al=allLifts();
+  const logs=[...d.logs].filter(l=>!filter||l.lift===filter).reverse().slice(0,150);
+  const el=document.getElementById('histContent');
+  if(!logs.length) { el.innerHTML='<div class="empty">No logs yet.</div>'; return; }
+  el.innerHTML=`<table class="hist-table">
+    <thead><tr>
+      <th>Date</th>${!filter?'<th>Lift</th>':''}
+      <th>Weight</th><th>Reps</th><th>1RM</th><th>Rank</th>
+    </tr></thead>
+    <tbody>${logs.map(l=>{
+      const info=al[l.lift];
+      const rank=(d.bw&&info)?calcRank(l.orm,d.bw,info.t):'—';
+      return `<tr>
+        <td>${l.date.slice(0,10)}</td>${!filter?`<td>${l.lift}</td>`:''}
+        <td>${l.w} lbs</td><td>${l.r}</td>
+        <td>${l.orm.toFixed(1)} lbs</td>
+        <td class="${RK[rank]||''}">${rank}</td>
+      </tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+function saveBW() {
+  const v=parseFloat(document.getElementById('setBW').value);
+  if(!v||v<=0) { toast('Invalid bodyweight'); return; }
+  const d=D(); d.bw=v; save(d); updateBWDisplay(); toast('Saved');
+}
+
+function addCustom() {
+  const name=document.getElementById('cName').value.trim();
+  if(!name) { toast('Enter a name'); return; }
+  const t=[1,2,3,4,5].map(i=>parseFloat(document.getElementById('t'+i).value));
+  if(t.some(isNaN)) { toast('Fill in all thresholds'); return; }
+  if(JSON.stringify(t)!==JSON.stringify([...t].sort((a,b)=>a-b))) { toast('Thresholds must be ascending'); return; }
+  const d=D(); d.custom=d.custom||{}; d.custom[name]=t; save(d);
+  toast(`"${name}" added`);
+  document.getElementById('cName').value='';
+  [1,2,3,4,5].forEach(i=>document.getElementById('t'+i).value='');
+}
+
+function exportData() {
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(D(),null,2)],{type:'application/json'}));
+  a.download='gymrank.json'; a.click();
+}
+
+function clearData() {
+  if(confirm('Delete all data?')) { localStorage.removeItem('gr'); updateBWDisplay(); renderRanks(); toast('Cleared'); }
+}
+
+function openBWModal() {
+  const d=D(); if(d.bw) document.getElementById('modalBW').value=d.bw;
+  document.getElementById('bwModal').classList.add('open');
+  setTimeout(()=>document.getElementById('modalBW').focus(),80);
+}
+
+function closeBWModal() { document.getElementById('bwModal').classList.remove('open'); }
+
+function saveBWModal() {
+  const v=parseFloat(document.getElementById('modalBW').value);
+  if(!v||v<=0) { toast('Invalid value'); return; }
+  const d=D(); d.bw=v; save(d); closeBWModal(); updateBWDisplay(); renderRanks(); toast('Saved');
+}
+
+document.getElementById('bwModal').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeBWModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeBWModal(); });
+
+function updateBWDisplay() {
+  const d=D();
+  document.getElementById('bwVal').textContent=d.bw?d.bw+' lbs':'not set';
+}
+
+function toast(msg) {
+  document.querySelectorAll('.toast').forEach(e=>e.remove());
+  const el=document.createElement('div'); el.className='toast'; el.textContent=msg;
+  document.body.appendChild(el); setTimeout(()=>el.remove(),2600);
+}
+
+updateBWDisplay();
+renderRanks();
+if(!D().bw) setTimeout(openBWModal,300);
+</script>
+</body>
+</html>
