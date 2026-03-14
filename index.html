@@ -500,7 +500,9 @@ const BADGE_DEFS = [
 
 // ── Storage ────────────────────────────────────────────────────────────────────
 function D() {
-  return JSON.parse(localStorage.getItem('gr') || '{"bw":null,"unit":"lbs","dark":false,"logs":[],"custom":{},"measurements":[],"xp":0,"badges":[]}');
+  const d = JSON.parse(localStorage.getItem('gr') || '{"bw":null,"unit":"lbs","dark":false,"logs":[],"custom":{},"measurements":[],"xp":0,"badges":[]}');
+  if (!d.unit) { d.unit = 'lbs'; localStorage.setItem('gr', JSON.stringify(d)); }
+  return d;
 }
 function save(d) { localStorage.setItem('gr', JSON.stringify(d)); }
 
@@ -511,7 +513,7 @@ function dispW(lbsVal) {
   const v = fromLbs(lbsVal);
   return v % 1 === 0 ? v.toFixed(0) : v.toFixed(1);
 }
-function unitStr() { return D().unit; }
+function unitStr() { return D().unit || 'lbs'; }
 
 // ── Calc ───────────────────────────────────────────────────────────────────────
 function epley(w,r) { return r===1?w:w*(1+r/30); }
