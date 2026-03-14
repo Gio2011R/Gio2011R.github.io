@@ -7,521 +7,406 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:      #f2f0eb;
-    --surface: #ece9e3;
-    --line:    #d4d0c8;
-    --muted:   #999690;
-    --text:    #2a2826;
-    --head:    #1a1816;
-    --bronze:  #a0693a;
-    --silver:  #787878;
-    --gold:    #b8960a;
-    --plat:    #2a7a6a;
-    --diamond: #5a3a9a;
-  }
+:root {
+  --bg:     #f2f0eb;
+  --sur:    #ece9e3;
+  --line:   #d4d0c8;
+  --muted:  #999690;
+  --text:   #2a2826;
+  --head:   #1a1816;
+  --bronze: #a0693a;
+  --silver: #787878;
+  --gold:   #b8960a;
+  --plat:   #2a7a6a;
+  --diam:   #5a3a9a;
+  --accent: #1a1816;
+}
+body.dark {
+  --bg:    #111210;
+  --sur:   #1a1917;
+  --line:  #2a2926;
+  --muted: #666460;
+  --text:  #b0ada8;
+  --head:  #e8e5e0;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;line-height:1.6;min-height:100vh;transition:background .2s,color .2s;}
+.shell{max-width:900px;margin:0 auto;padding:0 32px;}
+header{padding:44px 0 0;margin-bottom:36px;}
+.header-row{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:18px;border-bottom:1px solid var(--head);flex-wrap:wrap;gap:12px;}
+h1{font-family:'DM Serif Display',serif;font-size:34px;font-weight:400;letter-spacing:-.5px;color:var(--head);line-height:1;}
+h1 em{font-style:italic;color:var(--muted);}
+.header-right{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.hdr-btn{font-family:'DM Mono',monospace;font-size:11px;background:none;border:none;color:var(--muted);cursor:pointer;letter-spacing:.06em;text-transform:uppercase;padding:2px 0;border-bottom:1px solid transparent;transition:color .15s;}
+.hdr-btn:hover{color:var(--head);}
+.bw-pill{font-size:12px;color:var(--muted);cursor:pointer;padding-bottom:2px;border-bottom:1px solid transparent;transition:color .15s,border-color .15s;letter-spacing:.02em;}
+.bw-pill:hover{color:var(--head);border-color:var(--head);}
+.bw-pill strong{color:var(--head);}
+nav{display:flex;gap:0;margin-bottom:36px;overflow-x:auto;border-bottom:1px solid var(--line);}
+nav button{font-family:'DM Mono',monospace;font-size:11px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);cursor:pointer;padding:0 16px 12px;letter-spacing:.06em;text-transform:uppercase;transition:color .15s;white-space:nowrap;margin-bottom:-1px;}
+nav button:hover{color:var(--text);}
+nav button.active{color:var(--head);border-color:var(--head);}
+.tab{display:none;}.tab.active{display:block;}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* xp bar in header */
+.xp-bar-wrap{display:flex;align-items:center;gap:8px;}
+.xp-label{font-size:11px;color:var(--muted);letter-spacing:.04em;white-space:nowrap;}
+.xp-bar{width:80px;height:3px;background:var(--line);position:relative;}
+.xp-bar-fill{height:100%;background:var(--head);transition:width .4s ease;}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    line-height: 1.6;
-    min-height: 100vh;
-  }
+/* rank filter */
+.rank-filter{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px;}
+.rf-btn{font-family:'DM Mono',monospace;font-size:11px;background:none;border:none;color:var(--muted);cursor:pointer;padding:0 0 2px;letter-spacing:.04em;text-transform:uppercase;border-bottom:1px solid transparent;transition:color .15s;}
+.rf-btn:hover{color:var(--text);}
+.rf-btn.active{color:var(--head);border-color:var(--head);}
 
-  .shell { max-width: 860px; margin: 0 auto; padding: 0 32px; }
+/* rank table */
+.rank-list-head{display:grid;grid-template-columns:1fr 90px 90px 90px 100px;gap:12px;padding-bottom:10px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+.rank-row{display:grid;grid-template-columns:1fr 90px 90px 90px 100px;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:padding .1s,background .1s;}
+.rank-row:first-child{border-top:1px solid var(--line);}
+.rank-row:hover{background:var(--sur);padding:12px 10px;margin:0 -10px;}
+.rr-name{font-size:13px;color:var(--head);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rr-stat{font-size:12px;color:var(--muted);}
+.rr-stat strong{color:var(--text);font-weight:500;}
+.rr-rank{font-size:11px;letter-spacing:.06em;text-transform:uppercase;text-align:right;}
+.rr-bar{height:2px;background:var(--line);}
+.rr-bar-fill{height:100%;transition:width .5s ease;}
+.rk-unranked{color:var(--muted);} .rk-bronze{color:var(--bronze);} .rk-silver{color:var(--silver);} .rk-gold{color:var(--gold);} .rk-platinum{color:var(--plat);} .rk-diamond{color:var(--diam);}
+.fill-unranked{background:var(--line);} .fill-bronze{background:var(--bronze);} .fill-silver{background:var(--silver);} .fill-gold{background:var(--gold);} .fill-platinum{background:var(--plat);} .fill-diamond{background:var(--diam);}
 
-  /* header */
-  header { padding: 48px 0 0; margin-bottom: 40px; }
+/* form */
+.log-wrap{max-width:420px;}
+.field{margin-bottom:22px;}
+.field label{display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.field select,.field input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);color:var(--head);font-family:'DM Mono',monospace;font-size:16px;padding:6px 0;outline:none;transition:border-color .15s;appearance:none;border-radius:0;}
+.field select:focus,.field input:focus{border-color:var(--head);}
+.field textarea{width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);color:var(--head);font-family:'DM Mono',monospace;font-size:13px;padding:6px 0;outline:none;transition:border-color .15s;resize:none;border-radius:0;}
+.field textarea:focus{border-color:var(--head);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.btn-primary{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;background:var(--head);color:var(--bg);border:none;padding:12px 28px;cursor:pointer;transition:opacity .15s;}
+.btn-primary:hover{opacity:.75;}
+.log-result{margin-top:32px;padding-top:24px;border-top:1px solid var(--line);display:none;}
+.log-result.show{display:block;}
+.result-lift{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.result-rank{font-family:'DM Serif Display',serif;font-size:40px;font-weight:400;line-height:1;margin-bottom:18px;}
+.result-stats{display:flex;gap:28px;flex-wrap:wrap;}
+.rs{display:flex;flex-direction:column;gap:3px;}
+.rs-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+.rs-val{font-size:14px;color:var(--head);}
+.pr-tag{display:inline-block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--gold);color:var(--gold);padding:1px 7px;margin-left:10px;vertical-align:middle;position:relative;top:-6px;font-family:'DM Mono',monospace;}
 
-  .header-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--head);
-  }
+/* warmup table */
+.warmup-table{width:100%;border-collapse:collapse;margin-top:20px;}
+.warmup-table th{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 16px 8px 0;border-bottom:1px solid var(--line);font-weight:400;}
+.warmup-table td{padding:10px 16px 10px 0;border-bottom:1px solid var(--line);font-size:13px;color:var(--text);}
 
-  h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 36px;
-    font-weight: 400;
-    letter-spacing: -0.5px;
-    color: var(--head);
-    line-height: 1;
-  }
+/* plate display */
+.plate-result{margin-top:20px;}
+.plate-bar-wrap{margin:20px 0;display:flex;align-items:center;justify-content:center;}
+.plate-info{font-size:12px;color:var(--muted);margin-top:4px;}
+.plate-info span{color:var(--head);}
 
-  h1 em { font-style: italic; color: var(--muted); }
+/* progress charts */
+.chart-section{margin-bottom:44px;}
+.chart-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.chart-box{background:var(--sur);padding:20px;overflow-x:auto;}
+.chart-box svg text{font-family:'DM Mono',monospace;}
 
-  .bw-pill {
-    font-size: 12px;
-    color: var(--muted);
-    cursor: pointer;
-    padding-bottom: 2px;
-    border-bottom: 1px solid transparent;
-    transition: color 0.15s, border-color 0.15s;
-    letter-spacing: 0.02em;
-  }
+/* records wall */
+.records-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1px;background:var(--line);}
+.rec-card{background:var(--bg);padding:18px 20px;}
+.rec-lift{font-size:12px;color:var(--head);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rec-orm{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;line-height:1;margin-bottom:4px;}
+.rec-rank{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
 
-  .bw-pill:hover { color: var(--head); border-color: var(--head); }
-  .bw-pill strong { color: var(--head); }
+/* measurements */
+.meas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:24px;margin-bottom:32px;}
+.meas-field{}
+.meas-history{margin-top:32px;}
+.meas-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:12px;}
+.meas-row:first-child{border-top:1px solid var(--line);}
 
-  /* nav */
-  nav { display: flex; gap: 28px; margin-bottom: 40px; }
+/* profile / badges */
+.level-wrap{margin-bottom:36px;}
+.level-name{font-family:'DM Serif Display',serif;font-size:32px;font-weight:400;color:var(--head);margin-bottom:4px;}
+.level-xp{font-size:11px;color:var(--muted);letter-spacing:.04em;margin-bottom:12px;}
+.level-bar{height:4px;background:var(--line);margin-bottom:20px;}
+.level-bar-fill{height:100%;background:var(--head);transition:width .5s ease;}
+.streak-row{display:flex;gap:32px;margin-bottom:36px;padding-bottom:28px;border-bottom:1px solid var(--line);}
+.streak-stat{display:flex;flex-direction:column;gap:4px;}
+.streak-num{font-family:'DM Serif Display',serif;font-size:36px;font-weight:400;color:var(--head);line-height:1;}
+.streak-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+.badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+.badge{background:var(--sur);padding:16px 18px;border:1px solid var(--line);}
+.badge.earned{border-color:var(--head);}
+.badge.locked{opacity:.45;}
+.badge-name{font-size:12px;color:var(--head);margin-bottom:3px;}
+.badge-desc{font-size:11px;color:var(--muted);letter-spacing:.02em;}
+.badge-earned-label{font-size:10px;color:var(--head);letter-spacing:.06em;text-transform:uppercase;margin-top:8px;}
 
-  nav button {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    padding: 0 0 3px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    border-bottom: 1px solid transparent;
-    transition: color 0.15s;
-  }
+/* history */
+.history-filter{margin-bottom:24px;}
+.history-filter select{font-family:'DM Mono',monospace;font-size:13px;background:transparent;border:none;border-bottom:1px solid var(--line);color:var(--head);padding:4px 0;outline:none;appearance:none;min-width:220px;cursor:pointer;}
+.hist-table{width:100%;border-collapse:collapse;}
+.hist-table th{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 14px 10px 0;border-bottom:1px solid var(--line);font-weight:400;}
+.hist-table td{padding:10px 14px 10px 0;border-bottom:1px solid var(--line);font-size:12px;color:var(--text);}
+.hist-table tr:hover td{color:var(--head);}
+.hist-note{font-style:italic;color:var(--muted);font-size:11px;}
 
-  nav button:hover { color: var(--text); }
-  nav button.active { color: var(--head); border-color: var(--head); }
+/* settings */
+.settings-wrap{max-width:380px;}
+.settings-section{margin-bottom:40px;}
+.settings-section h3{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;padding-bottom:8px;border-bottom:1px solid var(--line);}
+.btn-ghost{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;background:none;border:1px solid var(--line);color:var(--text);padding:9px 20px;cursor:pointer;transition:all .15s;margin-right:10px;margin-bottom:8px;}
+.btn-ghost:hover{border-color:var(--text);color:var(--head);}
+.btn-ghost.danger{color:#b04040;border-color:#d4c0c0;}
+.btn-ghost.danger:hover{border-color:#b04040;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);}
+.toggle-label{font-size:12px;color:var(--text);letter-spacing:.02em;}
+.toggle{position:relative;width:36px;height:20px;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:var(--line);cursor:pointer;transition:.2s;border-radius:10px;}
+.toggle-slider:before{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;background:var(--muted);transition:.2s;border-radius:50%;}
+.toggle input:checked+.toggle-slider{background:var(--head);}
+.toggle input:checked+.toggle-slider:before{transform:translateX(16px);background:var(--bg);}
 
-  /* tabs */
-  .tab { display: none; }
-  .tab.active { display: block; }
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px);}
+body.dark .overlay{background:rgba(0,0,0,.6);}
+.overlay.open{display:flex;}
+.modal{background:var(--bg);border:1px solid var(--head);padding:36px 40px;width:min(440px,90vw);max-height:90vh;overflow-y:auto;}
+.modal h2{font-family:'DM Serif Display',serif;font-size:24px;font-weight:400;color:var(--head);margin-bottom:24px;}
+.modal-btns{display:flex;gap:12px;margin-top:24px;}
 
-  /* rank filter */
-  .rank-filter { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+/* toast */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--head);color:var(--bg);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.04em;padding:10px 20px;z-index:999;pointer-events:none;animation:tfade 2.6s ease forwards;white-space:nowrap;}
+@keyframes tfade{0%{opacity:0;transform:translateX(-50%) translateY(8px);}10%{opacity:1;transform:translateX(-50%) translateY(0);}80%{opacity:1;}100%{opacity:0;}}
 
-  .rf-btn {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    padding: 0 0 2px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    border-bottom: 1px solid transparent;
-    transition: color 0.15s;
-  }
+.empty{padding:50px 0;color:var(--muted);font-size:12px;letter-spacing:.02em;}
+.section-title{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;padding-bottom:8px;border-bottom:1px solid var(--line);}
 
-  .rf-btn:hover { color: var(--text); }
-  .rf-btn.active { color: var(--head); border-color: var(--head); }
-
-  /* ranks list */
-  .rank-list-head {
-    display: grid;
-    grid-template-columns: 1fr 90px 90px 90px 1fr;
-    gap: 16px;
-    padding-bottom: 10px;
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  .rank-row {
-    display: grid;
-    grid-template-columns: 1fr 90px 90px 90px 1fr;
-    align-items: center;
-    gap: 16px;
-    padding: 13px 0;
-    border-bottom: 1px solid var(--line);
-    cursor: pointer;
-    transition: padding 0.1s, background 0.1s;
-  }
-
-  .rank-row:first-child { border-top: 1px solid var(--line); }
-
-  .rank-row:hover {
-    background: var(--surface);
-    padding: 13px 10px;
-    margin: 0 -10px;
-  }
-
-  .rr-name { font-size: 13px; color: var(--head); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .rr-stat { font-size: 12px; color: var(--muted); }
-  .rr-stat strong { color: var(--text); font-weight: 500; }
-  .rr-rank { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; text-align: right; }
-  .rr-bar { height: 2px; background: var(--line); }
-  .rr-bar-fill { height: 100%; transition: width 0.5s ease; }
-
-  /* rank colors */
-  .rk-unranked { color: var(--muted); }
-  .rk-bronze   { color: var(--bronze); }
-  .rk-silver   { color: var(--silver); }
-  .rk-gold     { color: var(--gold); }
-  .rk-platinum { color: var(--plat); }
-  .rk-diamond  { color: var(--diamond); }
-  .fill-unranked { background: var(--line); }
-  .fill-bronze   { background: var(--bronze); }
-  .fill-silver   { background: var(--silver); }
-  .fill-gold     { background: var(--gold); }
-  .fill-platinum { background: var(--plat); }
-  .fill-diamond  { background: var(--diamond); }
-
-  /* log form */
-  .log-wrap { max-width: 400px; }
-
-  .field { margin-bottom: 24px; }
-
-  .field label {
-    display: block;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-
-  .field select,
-  .field input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid var(--line);
-    color: var(--head);
-    font-family: 'DM Mono', monospace;
-    font-size: 16px;
-    padding: 6px 0;
-    outline: none;
-    transition: border-color 0.15s;
-    appearance: none;
-    border-radius: 0;
-  }
-
-  .field select:focus,
-  .field input:focus { border-color: var(--head); }
-
-  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-
-  .btn-primary {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    background: var(--head);
-    color: var(--bg);
-    border: none;
-    padding: 12px 28px;
-    cursor: pointer;
-    transition: opacity 0.15s;
-  }
-
-  .btn-primary:hover { opacity: 0.75; }
-
-  /* log result */
-  .log-result {
-    margin-top: 36px;
-    padding-top: 28px;
-    border-top: 1px solid var(--line);
-    display: none;
-  }
-
-  .log-result.show { display: block; }
-
-  .result-lift {
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-
-  .result-rank {
-    font-family: 'DM Serif Display', serif;
-    font-size: 40px;
-    font-weight: 400;
-    line-height: 1;
-    margin-bottom: 20px;
-  }
-
-  .result-stats { display: flex; gap: 32px; flex-wrap: wrap; }
-
-  .rs { display: flex; flex-direction: column; gap: 3px; }
-  .rs-label { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-  .rs-val { font-size: 14px; color: var(--head); }
-
-  .pr-tag {
-    display: inline-block;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    border: 1px solid var(--gold);
-    color: var(--gold);
-    padding: 1px 7px;
-    margin-left: 10px;
-    vertical-align: middle;
-    position: relative;
-    top: -6px;
-    font-family: 'DM Mono', monospace;
-  }
-
-  /* history */
-  .history-filter { margin-bottom: 28px; }
-
-  .history-filter select {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid var(--line);
-    color: var(--head);
-    padding: 4px 0;
-    outline: none;
-    appearance: none;
-    min-width: 220px;
-    cursor: pointer;
-  }
-
-  .hist-table { width: 100%; border-collapse: collapse; }
-
-  .hist-table th {
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--muted);
-    text-align: left;
-    padding: 0 16px 10px 0;
-    border-bottom: 1px solid var(--line);
-    font-weight: 400;
-  }
-
-  .hist-table td {
-    padding: 11px 16px 11px 0;
-    border-bottom: 1px solid var(--line);
-    font-size: 12px;
-    color: var(--text);
-  }
-
-  .hist-table tr:hover td { color: var(--head); }
-
-  /* settings */
-  .settings-wrap { max-width: 380px; }
-  .settings-section { margin-bottom: 44px; }
-
-  .settings-section h3 {
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 20px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .btn-ghost {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    background: none;
-    border: 1px solid var(--line);
-    color: var(--text);
-    padding: 9px 20px;
-    cursor: pointer;
-    transition: all 0.15s;
-    margin-right: 10px;
-    margin-bottom: 8px;
-  }
-
-  .btn-ghost:hover { border-color: var(--text); color: var(--head); }
-  .btn-ghost.danger { color: #b04040; border-color: #d4c0c0; }
-  .btn-ghost.danger:hover { border-color: #b04040; }
-
-  /* modal */
-  .overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(242,240,235,0.88);
-    backdrop-filter: blur(3px);
-    z-index: 100;
-    display: none;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .overlay.open { display: flex; }
-
-  .modal {
-    background: var(--bg);
-    border: 1px solid var(--head);
-    padding: 36px 40px;
-    width: min(440px, 90vw);
-  }
-
-  .modal h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 24px;
-    font-weight: 400;
-    color: var(--head);
-    margin-bottom: 28px;
-  }
-
-  .modal-btns { display: flex; gap: 12px; margin-top: 24px; }
-
-  /* toast */
-  .toast {
-    position: fixed;
-    bottom: 28px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--head);
-    color: var(--bg);
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    padding: 10px 20px;
-    z-index: 999;
-    pointer-events: none;
-    animation: tfade 2.5s ease forwards;
-    white-space: nowrap;
-  }
-
-  @keyframes tfade {
-    0%   { opacity:0; transform:translateX(-50%) translateY(8px); }
-    12%  { opacity:1; transform:translateX(-50%) translateY(0); }
-    80%  { opacity:1; }
-    100% { opacity:0; }
-  }
-
-  .empty { padding: 60px 0; color: var(--muted); font-size: 12px; letter-spacing: 0.02em; }
-
-  @media (max-width: 600px) {
-    .shell { padding: 0 20px; }
-    h1 { font-size: 28px; }
-    .rank-list-head,
-    .rank-row { grid-template-columns: 1fr 80px 88px; }
-    .rank-list-head > *:nth-child(3),
-    .rank-list-head > *:nth-child(5),
-    .rank-row > *:nth-child(3),
-    .rank-row > *:nth-child(5) { display: none; }
-    .field-row { grid-template-columns: 1fr; }
-  }
+@media(max-width:640px){
+  .shell{padding:0 16px;}
+  h1{font-size:26px;}
+  .rank-list-head,.rank-row{grid-template-columns:1fr 80px 80px;}
+  .rank-list-head>*:nth-child(3),.rank-list-head>*:nth-child(5),.rank-row>*:nth-child(3),.rank-row>*:nth-child(5){display:none;}
+  .field-row{grid-template-columns:1fr;}
+  .modal{padding:24px 20px;}
+}
 </style>
 </head>
 <body>
 <div class="shell">
 
-  <header>
-    <div class="header-row">
-      <h1>Gym<em>rank</em></h1>
-      <div class="bw-pill" id="bwDisplay" onclick="openBWModal()">
-        bodyweight: <strong id="bwVal">not set</strong>
+<header>
+  <div class="header-row">
+    <h1>Gym<em>rank</em></h1>
+    <div class="header-right">
+      <div class="xp-bar-wrap">
+        <div class="xp-label" id="levelLabel">—</div>
+        <div class="xp-bar"><div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div></div>
       </div>
-    </div>
-  </header>
-
-  <nav>
-    <button class="active" onclick="showTab('ranks',this)">Ranks</button>
-    <button onclick="showTab('log',this)">Log</button>
-    <button onclick="showTab('history',this)">History</button>
-    <button onclick="showTab('settings',this)">Settings</button>
-  </nav>
-
-  <!-- RANKS -->
-  <div id="tab-ranks" class="tab active">
-    <div class="rank-filter" id="catFilter"></div>
-    <div class="rank-list-head">
-      <div>Lift</div>
-      <div>1RM</div>
-      <div>BW ratio</div>
-      <div style="text-align:right">Rank</div>
-      <div>Progress</div>
-    </div>
-    <div id="rankList"></div>
-  </div>
-
-  <!-- LOG -->
-  <div id="tab-log" class="tab">
-    <div class="log-wrap">
-      <div class="field">
-        <label>Category</label>
-        <select id="logCat" onchange="populateLifts()">
-          <option value="">Select</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Lift</label>
-        <select id="logLift"><option value="">Select</option></select>
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label>Weight (lbs)</label>
-          <input type="number" id="logW" placeholder="225" min="1" step="2.5">
-        </div>
-        <div class="field">
-          <label>Reps</label>
-          <input type="number" id="logR" placeholder="5" min="1" step="1">
-        </div>
-      </div>
-      <button class="btn-primary" onclick="logSet()">Log set</button>
-      <div class="log-result" id="logResult"></div>
+      <button class="hdr-btn" onclick="toggleUnit()"><span id="unitLabel">lbs</span> / <span id="unitOther">kg</span></button>
+      <button class="hdr-btn" onclick="toggleDark()" id="darkBtn">dark</button>
+      <div class="bw-pill" id="bwDisplay" onclick="openBWModal()">bw: <strong id="bwVal">not set</strong></div>
     </div>
   </div>
+</header>
 
-  <!-- HISTORY -->
-  <div id="tab-history" class="tab">
-    <div class="history-filter">
-      <select id="histSel" onchange="renderHistory()">
-        <option value="">All lifts</option>
-      </select>
-    </div>
-    <div id="histContent"></div>
+<nav>
+  <button class="active" onclick="showTab('ranks',this)">Ranks</button>
+  <button onclick="showTab('log',this)">Log</button>
+  <button onclick="showTab('progress',this)">Progress</button>
+  <button onclick="showTab('records',this)">Records</button>
+  <button onclick="showTab('tools',this)">Tools</button>
+  <button onclick="showTab('profile',this)">Profile</button>
+  <button onclick="showTab('measurements',this)">Measurements</button>
+  <button onclick="showTab('history',this)">History</button>
+  <button onclick="showTab('settings',this)">Settings</button>
+</nav>
+
+<!-- RANKS -->
+<div id="tab-ranks" class="tab active">
+  <div class="rank-filter" id="catFilter"></div>
+  <div class="rank-list-head">
+    <div>Lift</div><div>1RM</div><div>BW ratio</div><div style="text-align:right">Rank</div><div>Progress</div>
   </div>
-
-  <!-- SETTINGS -->
-  <div id="tab-settings" class="tab">
-    <div class="settings-wrap">
-      <div class="settings-section">
-        <h3>Bodyweight</h3>
-        <div class="field">
-          <label>Weight (lbs)</label>
-          <input type="number" id="setBW" placeholder="185" min="50" step="1">
-        </div>
-        <button class="btn-primary" onclick="saveBW()">Save</button>
-      </div>
-      <div class="settings-section">
-        <h3>Add custom lift</h3>
-        <div class="field">
-          <label>Name</label>
-          <input type="text" id="cName" placeholder="e.g. Cable Lateral Raise">
-        </div>
-        <div class="field-row">
-          <div class="field"><label>Bronze (×BW)</label><input type="number" id="t1" placeholder="0.50" step="0.05"></div>
-          <div class="field"><label>Silver</label><input type="number" id="t2" placeholder="0.85" step="0.05"></div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label>Gold</label><input type="number" id="t3" placeholder="1.25" step="0.05"></div>
-          <div class="field"><label>Platinum</label><input type="number" id="t4" placeholder="1.65" step="0.05"></div>
-        </div>
-        <div class="field">
-          <label>Diamond</label>
-          <input type="number" id="t5" placeholder="2.00" step="0.05">
-        </div>
-        <button class="btn-primary" onclick="addCustom()">Add lift</button>
-      </div>
-      <div class="settings-section">
-        <h3>Data</h3>
-        <button class="btn-ghost" onclick="exportData()">Export JSON</button>
-        <button class="btn-ghost danger" onclick="clearData()">Clear all data</button>
-      </div>
-    </div>
-  </div>
-
+  <div id="rankList"></div>
 </div>
 
-<!-- Modal -->
+<!-- LOG -->
+<div id="tab-log" class="tab">
+  <div class="log-wrap">
+    <div class="field"><label>Category</label>
+      <select id="logCat" onchange="populateLifts()"><option value="">Select</option></select>
+    </div>
+    <div class="field"><label>Lift</label>
+      <select id="logLift"><option value="">Select</option></select>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Weight (<span class="unit-label">lbs</span>)</label>
+        <input type="number" id="logW" placeholder="225" min="1" step="2.5">
+      </div>
+      <div class="field"><label>Reps</label>
+        <input type="number" id="logR" placeholder="5" min="1" step="1">
+      </div>
+    </div>
+    <div class="field"><label>Notes (optional)</label>
+      <textarea id="logNotes" rows="2" placeholder="Felt strong, paused at bottom..."></textarea>
+    </div>
+    <button class="btn-primary" onclick="logSet()">Log set</button>
+    <div class="log-result" id="logResult"></div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div id="tab-progress" class="tab">
+  <div class="chart-section">
+    <div class="section-title">1RM over time</div>
+    <div class="field" style="max-width:280px;margin-bottom:20px">
+      <label>Lift</label>
+      <select id="progressLift" onchange="renderProgressCharts()"><option value="">Select a lift</option></select>
+    </div>
+    <div class="chart-box" id="ormChart"><div class="empty">Select a lift above.</div></div>
+  </div>
+  <div class="chart-section">
+    <div class="section-title">Weekly volume (lbs lifted)</div>
+    <div class="chart-box" id="volChart"><div class="empty">No logs yet.</div></div>
+  </div>
+</div>
+
+<!-- RECORDS -->
+<div id="tab-records" class="tab">
+  <div class="section-title">Personal Records</div>
+  <div class="records-grid" id="recordsGrid"></div>
+</div>
+
+<!-- TOOLS -->
+<div id="tab-tools" class="tab">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;max-width:700px;">
+    <!-- Plate calculator -->
+    <div>
+      <div class="section-title">Plate calculator</div>
+      <div class="field"><label>Target weight (<span class="unit-label">lbs</span>)</label>
+        <input type="number" id="plateTarget" placeholder="315" min="1" step="5" oninput="calcPlates()">
+      </div>
+      <div class="field"><label>Bar weight (<span class="unit-label">lbs</span>)</label>
+        <select id="plateBar" onchange="calcPlates()">
+          <option value="45">45 lbs (standard)</option>
+          <option value="35">35 lbs (women's)</option>
+          <option value="20">20 lbs (EZ bar)</option>
+          <option value="15">15 lbs (light)</option>
+        </select>
+      </div>
+      <div id="plateResult" class="plate-result"></div>
+    </div>
+    <!-- Warmup calculator -->
+    <div>
+      <div class="section-title">Warmup sets</div>
+      <div class="field"><label>Working weight (<span class="unit-label">lbs</span>)</label>
+        <input type="number" id="warmupW" placeholder="225" min="1" step="5" oninput="calcWarmup()">
+      </div>
+      <div class="field"><label>Working reps</label>
+        <input type="number" id="warmupR" placeholder="5" min="1" step="1" oninput="calcWarmup()">
+      </div>
+      <div id="warmupResult"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div id="tab-profile" class="tab">
+  <div class="level-wrap">
+    <div class="level-name" id="levelName">—</div>
+    <div class="level-xp" id="levelXp"></div>
+    <div class="level-bar"><div class="level-bar-fill" id="levelBarFill" style="width:0%"></div></div>
+  </div>
+  <div class="streak-row">
+    <div class="streak-stat"><div class="streak-num" id="streakNum">0</div><div class="streak-label">Day streak</div></div>
+    <div class="streak-stat"><div class="streak-num" id="totalSets">0</div><div class="streak-label">Total sets</div></div>
+    <div class="streak-stat"><div class="streak-num" id="totalPRs">0</div><div class="streak-label">PRs logged</div></div>
+    <div class="streak-stat"><div class="streak-num" id="totalXP">0</div><div class="streak-label">Total XP</div></div>
+  </div>
+  <div class="section-title">Badges</div>
+  <div class="badges-grid" id="badgesGrid"></div>
+</div>
+
+<!-- MEASUREMENTS -->
+<div id="tab-measurements" class="tab">
+  <div class="section-title">Log measurements (<span class="unit-label">lbs</span> / inches)</div>
+  <div class="meas-grid">
+    <div class="meas-field"><div class="field"><label>Weight (<span class="unit-label">lbs</span>)</label><input type="number" id="mBW" placeholder="185" step=".1"></div></div>
+    <div class="meas-field"><div class="field"><label>Chest (in)</label><input type="number" id="mChest" placeholder="42" step=".5"></div></div>
+    <div class="meas-field"><div class="field"><label>Waist (in)</label><input type="number" id="mWaist" placeholder="34" step=".5"></div></div>
+    <div class="meas-field"><div class="field"><label>Hips (in)</label><input type="number" id="mHips" placeholder="40" step=".5"></div></div>
+    <div class="meas-field"><div class="field"><label>Arms (in)</label><input type="number" id="mArms" placeholder="15" step=".25"></div></div>
+    <div class="meas-field"><div class="field"><label>Shoulders (in)</label><input type="number" id="mShoulder" placeholder="50" step=".5"></div></div>
+    <div class="meas-field"><div class="field"><label>Thighs (in)</label><input type="number" id="mThighs" placeholder="24" step=".25"></div></div>
+    <div class="meas-field"><div class="field"><label>Calves (in)</label><input type="number" id="mCalves" placeholder="15" step=".25"></div></div>
+    <div class="meas-field"><div class="field"><label>Neck (in)</label><input type="number" id="mNeck" placeholder="16" step=".25"></div></div>
+  </div>
+  <button class="btn-primary" onclick="saveMeasurement()">Save snapshot</button>
+  <div class="meas-history" id="measHistory"></div>
+</div>
+
+<!-- HISTORY -->
+<div id="tab-history" class="tab">
+  <div class="history-filter">
+    <select id="histSel" onchange="renderHistory()"><option value="">All lifts</option></select>
+  </div>
+  <div id="histContent"></div>
+</div>
+
+<!-- SETTINGS -->
+<div id="tab-settings" class="tab">
+  <div class="settings-wrap">
+    <div class="settings-section">
+      <h3>Display</h3>
+      <div class="toggle-row">
+        <div class="toggle-label">Dark mode</div>
+        <label class="toggle"><input type="checkbox" id="darkToggle" onchange="toggleDark()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Use kilograms</div>
+        <label class="toggle"><input type="checkbox" id="kgToggle" onchange="toggleUnit()"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+    <div class="settings-section">
+      <h3>Bodyweight</h3>
+      <div class="field"><label>Weight (<span class="unit-label">lbs</span>)</label>
+        <input type="number" id="setBW" placeholder="185" min="50" step="1">
+      </div>
+      <button class="btn-primary" onclick="saveBW()">Save</button>
+    </div>
+    <div class="settings-section">
+      <h3>Add custom lift</h3>
+      <div class="field"><label>Name</label><input type="text" id="cName" placeholder="Cable Lateral Raise"></div>
+      <div class="field-row">
+        <div class="field"><label>Bronze (×BW)</label><input type="number" id="t1" placeholder="0.50" step="0.05"></div>
+        <div class="field"><label>Silver</label><input type="number" id="t2" placeholder="0.85" step="0.05"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Gold</label><input type="number" id="t3" placeholder="1.25" step="0.05"></div>
+        <div class="field"><label>Platinum</label><input type="number" id="t4" placeholder="1.65" step="0.05"></div>
+      </div>
+      <div class="field"><label>Diamond</label><input type="number" id="t5" placeholder="2.00" step="0.05"></div>
+      <button class="btn-primary" onclick="addCustom()">Add lift</button>
+    </div>
+    <div class="settings-section">
+      <h3>Data</h3>
+      <button class="btn-ghost" onclick="exportData()">Export JSON</button>
+      <button class="btn-ghost danger" onclick="clearData()">Clear all data</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /shell -->
+
+<!-- BW Modal -->
 <div class="overlay" id="bwModal">
   <div class="modal">
     <h2>Set bodyweight</h2>
-    <div class="field">
-      <label>Weight (lbs)</label>
+    <div class="field"><label>Weight (<span class="unit-label">lbs</span>)</label>
       <input type="number" id="modalBW" placeholder="185" min="50" step="1">
     </div>
     <div class="modal-btns">
@@ -532,12 +417,13 @@
 </div>
 
 <script>
+// ── Constants ──────────────────────────────────────────────────────────────────
 const RANKS = ["Unranked","Bronze","Silver","Gold","Platinum","Diamond"];
-const RK = { Unranked:"rk-unranked", Bronze:"rk-bronze", Silver:"rk-silver", Gold:"rk-gold", Platinum:"rk-platinum", Diamond:"rk-diamond" };
-const FK = { Unranked:"fill-unranked", Bronze:"fill-bronze", Silver:"fill-silver", Gold:"fill-gold", Platinum:"fill-platinum", Diamond:"fill-diamond" };
+const RK = {Unranked:"rk-unranked",Bronze:"rk-bronze",Silver:"rk-silver",Gold:"rk-gold",Platinum:"rk-platinum",Diamond:"rk-diamond"};
+const FK = {Unranked:"fill-unranked",Bronze:"fill-bronze",Silver:"fill-silver",Gold:"fill-gold",Platinum:"fill-platinum",Diamond:"fill-diamond"};
 
 const CATS = {
-  "Barbell": {
+  "Barbell":{
     "Squat":[.75,1.25,1.75,2.25,2.75],"Bench Press":[.50,1.00,1.50,2.00,2.50],
     "Deadlift":[1.00,1.50,2.00,2.50,3.00],"Overhead Press":[.35,.65,1.00,1.35,1.75],
     "Barbell Row":[.50,.85,1.25,1.65,2.00],"Romanian Deadlift":[.75,1.25,1.75,2.25,2.75],
@@ -554,7 +440,7 @@ const CATS = {
     "Power Snatch":[.35,.60,.90,1.20,1.55],"Clean & Jerk":[.50,.85,1.20,1.60,2.00],
     "Snatch":[.35,.65,.95,1.30,1.65],
   },
-  "Dumbbell": {
+  "Dumbbell":{
     "DB Bench Press":[.45,.90,1.35,1.80,2.25],"DB Incline Press":[.35,.75,1.15,1.55,2.00],
     "DB Shoulder Press":[.30,.60,.90,1.25,1.60],"DB Row":[.25,.45,.70,.95,1.25],
     "DB RDL":[.60,1.00,1.45,1.90,2.35],"DB Curl":[.15,.28,.42,.57,.75],
@@ -563,7 +449,7 @@ const CATS = {
     "DB Shrug":[.40,.75,1.15,1.55,2.00],"DB Goblet Squat":[.30,.55,.80,1.10,1.40],
     "DB Lunge":[.30,.55,.85,1.15,1.50],"DB Step Up":[.25,.50,.75,1.05,1.35],
   },
-  "Cable / Machine": {
+  "Cable & Machine":{
     "Cable Row":[.50,.85,1.25,1.65,2.00],"Lat Pulldown":[.55,.90,1.30,1.70,2.10],
     "Cable Curl":[.20,.38,.57,.77,1.00],"Tricep Pushdown":[.20,.38,.57,.77,1.00],
     "Face Pull":[.20,.35,.55,.75,1.00],"Cable Fly":[.20,.38,.57,.77,1.00],
@@ -574,243 +460,656 @@ const CATS = {
     "Hack Squat":[.75,1.25,1.80,2.35,2.90],"Pec Deck":[.30,.55,.85,1.15,1.50],
     "Hip Abductor":[.35,.60,.90,1.20,1.55],"Hip Adductor":[.35,.60,.90,1.20,1.55],
   },
-  "Bodyweight": {
+  "Bodyweight":{
     "Pull-Up (added)":[0,.10,.30,.55,.85],"Chin-Up (added)":[0,.10,.30,.55,.85],
     "Dip (added)":[0,.15,.35,.60,.90],"Push-Up (added)":[0,.10,.25,.45,.65],
   },
-  "EZ Bar": {
+  "EZ Bar":{
     "EZ Bar Curl":[.25,.45,.65,.85,1.10],"Skullcrusher":[.20,.38,.57,.77,1.00],
     "Preacher Curl":[.20,.38,.55,.75,1.00],"Overhead Ext.":[.20,.38,.57,.77,1.00],
   },
-  "Kettlebell": {
+  "Kettlebell":{
     "KB Swing":[.25,.45,.65,.88,1.15],"KB Clean":[.20,.38,.57,.77,1.00],
     "KB Snatch":[.15,.28,.43,.60,.80],"KB Press":[.15,.28,.43,.60,.80],
     "KB Turkish Get-Up":[.10,.20,.33,.47,.63],"KB Goblet Squat":[.25,.45,.68,.93,1.20],
   },
 };
 
-function D() { return JSON.parse(localStorage.getItem('gr')||'{"bw":null,"logs":[],"custom":{}}'); }
-function save(d) { localStorage.setItem('gr', JSON.stringify(d)); }
-function epley(w,r) { return r===1?w:w*(1+r/30); }
+const LEVELS = [
+  {name:"Untrained",xp:0},
+  {name:"Novice",xp:100},
+  {name:"Beginner",xp:300},
+  {name:"Intermediate",xp:700},
+  {name:"Advanced",xp:1500},
+  {name:"Elite",xp:3000},
+  {name:"Master",xp:5000},
+];
 
+const BADGE_DEFS = [
+  {id:"first",name:"First Rep",desc:"Log your first set"},
+  {id:"century",name:"Centurion",desc:"Log 100 total sets"},
+  {id:"pr10",name:"PR Machine",desc:"Earn 10 personal records"},
+  {id:"diamond",name:"Diamond Club",desc:"Reach Diamond on any lift"},
+  {id:"streak7",name:"Consistent",desc:"7-day logging streak"},
+  {id:"streak30",name:"Iron Will",desc:"30-day logging streak"},
+  {id:"bigthree",name:"Big Three Gold",desc:"Gold or higher on Squat, Bench & Deadlift"},
+  {id:"measurer",name:"By the Numbers",desc:"Log your first body measurement"},
+  {id:"variety",name:"Renaissance",desc:"Log 10 different lifts"},
+  {id:"volume100",name:"Volume King",desc:"Lift 100,000 total lbs"},
+];
+
+// ── Storage ────────────────────────────────────────────────────────────────────
+function D() {
+  return JSON.parse(localStorage.getItem('gr') || '{"bw":null,"unit":"lbs","dark":false,"logs":[],"custom":{},"measurements":[],"xp":0,"badges":[]}');
+}
+function save(d) { localStorage.setItem('gr', JSON.stringify(d)); }
+
+// ── Unit helpers ───────────────────────────────────────────────────────────────
+function toLbs(v) { return D().unit === 'kg' ? v * 2.205 : v; }
+function fromLbs(v) { return D().unit === 'kg' ? v / 2.205 : v; }
+function dispW(lbsVal) {
+  const v = fromLbs(lbsVal);
+  return v % 1 === 0 ? v.toFixed(0) : v.toFixed(1);
+}
+function unitStr() { return D().unit; }
+
+// ── Calc ───────────────────────────────────────────────────────────────────────
+function epley(w,r) { return r===1?w:w*(1+r/30); }
 function allLifts() {
   const d=D(), out={};
-  for(const [cat,lifts] of Object.entries(CATS))
-    for(const [name,t] of Object.entries(lifts)) out[name]={t,cat};
+  for(const [cat,lifts] of Object.entries(CATS)) for(const [name,t] of Object.entries(lifts)) out[name]={t,cat};
   for(const [name,t] of Object.entries(d.custom||{})) out[name]={t,cat:'Custom'};
   return out;
 }
-
 function calcRank(orm,bw,t) {
   const r=orm/bw; let idx=0;
   for(let i=0;i<t.length;i++) if(r>=t[i]) idx=i+1;
   return RANKS[idx];
 }
-
 function bestLog(name) {
   const logs=D().logs.filter(l=>l.lift===name);
   return logs.length?logs.reduce((b,l)=>l.orm>b.orm?l:b):null;
 }
-
 function progress(orm,bw,t) {
   const r=orm/bw; let prev=0,next=null;
-  for(let i=0;i<t.length;i++) { if(r>=t[i]) prev=t[i]; else { next=t[i]; break; } }
-  if(next===null) return 100;
+  for(let i=0;i<t.length;i++){if(r>=t[i])prev=t[i];else{next=t[i];break;}}
+  if(next===null)return 100;
   return Math.min(100,Math.max(0,(r-prev)/(next-prev)*100));
 }
+function calcStreak() {
+  const logs=D().logs;
+  if(!logs.length)return 0;
+  const days=[...new Set(logs.map(l=>l.date.slice(0,10)))].sort().reverse();
+  const today=new Date().toISOString().slice(0,10);
+  const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);
+  if(days[0]!==today&&days[0]!==yest)return 0;
+  let streak=1;
+  for(let i=1;i<days.length;i++){
+    const diff=(new Date(days[i-1])-new Date(days[i]))/86400000;
+    if(diff===1)streak++;else break;
+  }
+  return streak;
+}
+function calcLevel(xp) {
+  let lvl=LEVELS[0];
+  for(const l of LEVELS) if(xp>=l.xp) lvl=l;
+  return lvl;
+}
+function nextLevel(xp) {
+  for(const l of LEVELS) if(l.xp>xp) return l;
+  return null;
+}
 
-function showTab(id,btn) {
+// ── XP & Badges ───────────────────────────────────────────────────────────────
+function awardXP(amount) { const d=D(); d.xp=(d.xp||0)+amount; save(d); }
+
+function checkBadges() {
+  const d=D();
+  const earned=new Set(d.badges||[]);
+  const al=allLifts();
+  const logs=d.logs;
+  const newBadges=[];
+
+  const add=(id)=>{ if(!earned.has(id)){earned.add(id);newBadges.push(id);} };
+
+  if(logs.length>=1) add('first');
+  if(logs.length>=100) add('century');
+
+  const prs=logs.filter(l=>l.isPR).length;
+  if(prs>=10) add('pr10');
+
+  if(d.bw){
+    for(const [name,info] of Object.entries(al)){
+      const best=bestLog(name);
+      if(best&&calcRank(best.orm,d.bw,info.t)==='Diamond'){add('diamond');break;}
+    }
+    const bigThreeRanks=['Squat','Bench Press','Deadlift'].map(n=>{
+      const info=al[n]; const best=bestLog(n);
+      if(!best||!info)return null;
+      return RANKS.indexOf(calcRank(best.orm,d.bw,info.t));
+    });
+    if(bigThreeRanks.every(r=>r!==null&&r>=RANKS.indexOf('Gold'))) add('bigthree');
+  }
+
+  const streak=calcStreak();
+  if(streak>=7) add('streak7');
+  if(streak>=30) add('streak30');
+
+  const uniqueLifts=new Set(logs.map(l=>l.lift)).size;
+  if(uniqueLifts>=10) add('variety');
+
+  const totalVol=logs.reduce((s,l)=>s+l.w*l.r,0);
+  if(totalVol>=100000) add('volume100');
+
+  if((d.measurements||[]).length>=1) add('measurer');
+
+  if(newBadges.length>0){
+    d.badges=[...earned];
+    save(d);
+    newBadges.forEach(id=>{ const b=BADGE_DEFS.find(b=>b.id===id); if(b) setTimeout(()=>toast('Badge unlocked: '+b.name),300); });
+  }
+}
+
+// ── Tabs ───────────────────────────────────────────────────────────────────────
+function showTab(id,btn){
   document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
-  if(btn) btn.classList.add('active');
-  if(id==='ranks') renderRanks();
-  if(id==='log') initLog();
-  if(id==='history') initHistory();
-  if(id==='settings') { const d=D(); if(d.bw) document.getElementById('setBW').value=d.bw; }
+  if(btn)btn.classList.add('active');
+  const map={ranks:renderRanks,log:initLog,progress:initProgress,records:renderRecords,tools:initTools,profile:renderProfile,measurements:renderMeasurements,history:initHistory};
+  if(map[id])map[id]();
 }
 
+// ── RANKS ──────────────────────────────────────────────────────────────────────
 let activeCat='All';
 
-function renderRanks() {
+function renderRanks(){
   const d=D(), al=allLifts();
   const cats=['All',...Object.keys(CATS)];
-  if(Object.keys(d.custom||{}).length) cats.push('Custom');
-
+  if(Object.keys(d.custom||{}).length)cats.push('Custom');
   document.getElementById('catFilter').innerHTML=cats.map(c=>
     `<button class="rf-btn ${activeCat===c?'active':''}" onclick="setCat('${c}')">${c}</button>`
   ).join('');
-
   const filtered=Object.entries(al).filter(([,i])=>activeCat==='All'||i.cat===activeCat);
   const list=document.getElementById('rankList');
-
-  if(!d.bw) {
+  if(!d.bw){
     list.innerHTML=`<div class="empty">Set your bodyweight to see ranks. <span style="cursor:pointer;text-decoration:underline" onclick="openBWModal()">Set now →</span></div>`;
     return;
   }
-
   list.innerHTML=filtered.map(([name,info])=>{
     const best=bestLog(name);
     const rank=best?calcRank(best.orm,d.bw,info.t):'Unranked';
     const pct=best?progress(best.orm,d.bw,info.t):0;
-    return `
-      <div class="rank-row" onclick="quickLog('${name.replace(/'/g,"\\'")}')">
-        <div class="rr-name">${name}</div>
-        <div class="rr-stat"><strong>${best?best.orm.toFixed(1)+'&thinsp;lbs':'—'}</strong></div>
-        <div class="rr-stat"><strong>${best?(best.orm/d.bw).toFixed(2)+'×':'—'}</strong></div>
-        <div class="rr-rank ${RK[rank]}">${rank}</div>
-        <div class="rr-bar"><div class="rr-bar-fill ${FK[rank]}" style="width:${pct}%"></div></div>
-      </div>`;
+    return `<div class="rank-row" onclick="quickLog('${name.replace(/'/g,"\\'")}')">
+      <div class="rr-name">${name}</div>
+      <div class="rr-stat"><strong>${best?dispW(best.orm)+' '+unitStr():'—'}</strong></div>
+      <div class="rr-stat"><strong>${best?(best.orm/d.bw).toFixed(2)+'×':'—'}</strong></div>
+      <div class="rr-rank ${RK[rank]}">${rank}</div>
+      <div class="rr-bar"><div class="rr-bar-fill ${FK[rank]}" style="width:${pct}%"></div></div>
+    </div>`;
   }).join('');
 }
 
-function setCat(c) { activeCat=c; renderRanks(); }
+function setCat(c){activeCat=c;renderRanks();}
 
-function quickLog(name) {
+function quickLog(name){
   const info=allLifts()[name];
   showTab('log',document.querySelector('nav button:nth-child(2)'));
-  setTimeout(()=>{
-    document.getElementById('logCat').value=info.cat;
-    populateLifts();
-    document.getElementById('logLift').value=name;
-  },30);
+  setTimeout(()=>{document.getElementById('logCat').value=info.cat;populateLifts();document.getElementById('logLift').value=name;},30);
 }
 
-function initLog() {
+// ── LOG ────────────────────────────────────────────────────────────────────────
+function initLog(){
   const sel=document.getElementById('logCat');
   const cats=[...Object.keys(CATS)];
-  if(Object.keys(D().custom||{}).length) cats.push('Custom');
+  if(Object.keys(D().custom||{}).length)cats.push('Custom');
   sel.innerHTML='<option value="">Select</option>'+cats.map(c=>`<option>${c}</option>`).join('');
   populateLifts();
 }
-
-function populateLifts() {
+function populateLifts(){
   const cat=document.getElementById('logCat').value;
   let names=[];
-  if(CATS[cat]) names=Object.keys(CATS[cat]);
-  else if(cat==='Custom') names=Object.keys(D().custom||{});
+  if(CATS[cat])names=Object.keys(CATS[cat]);
+  else if(cat==='Custom')names=Object.keys(D().custom||{});
   document.getElementById('logLift').innerHTML='<option value="">Select</option>'+names.map(n=>`<option>${n}</option>`).join('');
 }
-
-function logSet() {
+function logSet(){
   const d=D();
-  if(!d.bw) { toast('Set your bodyweight first'); openBWModal(); return; }
+  if(!d.bw){toast('Set your bodyweight first');openBWModal();return;}
   const lift=document.getElementById('logLift').value;
-  const w=parseFloat(document.getElementById('logW').value);
+  const wInput=parseFloat(document.getElementById('logW').value);
   const r=parseInt(document.getElementById('logR').value);
-  if(!lift) { toast('Select a lift'); return; }
-  if(!w||w<=0) { toast('Enter a valid weight'); return; }
-  if(!r||r<=0) { toast('Enter valid reps'); return; }
+  const notes=document.getElementById('logNotes').value.trim();
+  if(!lift){toast('Select a lift');return;}
+  if(!wInput||wInput<=0){toast('Enter a valid weight');return;}
+  if(!r||r<=0){toast('Enter valid reps');return;}
+
+  const wLbs=toLbs(wInput); // store in lbs
   const info=allLifts()[lift];
-  const orm=epley(w,r);
+  const orm=epley(wLbs,r);
   const rank=calcRank(orm,d.bw,info.t);
   const best=bestLog(lift);
   const isPR=!best||orm>best.orm;
-  d.logs.push({lift,w,r,orm,date:new Date().toISOString()});
+
+  d.logs.push({lift,w:wLbs,r,orm,date:new Date().toISOString(),notes,isPR});
+  d.xp=(d.xp||0)+10+(isPR?25:0);
   save(d);
+  checkBadges();
+
   const res=document.getElementById('logResult');
   res.className='log-result show';
   res.innerHTML=`
     <div class="result-lift">${lift}</div>
     <div class="result-rank ${RK[rank]}">${rank}${isPR?'<span class="pr-tag">PR</span>':''}</div>
     <div class="result-stats">
-      <div class="rs"><div class="rs-label">Weight</div><div class="rs-val">${w} lbs</div></div>
+      <div class="rs"><div class="rs-label">Weight</div><div class="rs-val">${dispW(wLbs)} ${unitStr()}</div></div>
       <div class="rs"><div class="rs-label">Reps</div><div class="rs-val">${r}</div></div>
-      <div class="rs"><div class="rs-label">Est. 1RM</div><div class="rs-val">${orm.toFixed(1)} lbs</div></div>
+      <div class="rs"><div class="rs-label">Est. 1RM</div><div class="rs-val">${dispW(orm)} ${unitStr()}</div></div>
       <div class="rs"><div class="rs-label">BW ratio</div><div class="rs-val">${(orm/d.bw).toFixed(2)}×</div></div>
+      <div class="rs"><div class="rs-label">XP earned</div><div class="rs-val">+${10+(isPR?25:0)}</div></div>
     </div>`;
   document.getElementById('logW').value='';
   document.getElementById('logR').value='';
+  document.getElementById('logNotes').value='';
+  updateHeaderXP();
 }
 
-function initHistory() {
+// ── PROGRESS ───────────────────────────────────────────────────────────────────
+function initProgress(){
+  const d=D();
+  const used=[...new Set(d.logs.map(l=>l.lift))].sort();
+  const sel=document.getElementById('progressLift');
+  sel.innerHTML='<option value="">Select a lift</option>'+used.map(n=>`<option>${n}</option>`).join('');
+  renderProgressCharts();
+}
+
+function renderProgressCharts(){
+  const d=D();
+  const lift=document.getElementById('progressLift').value;
+
+  // 1RM chart
+  const ormEl=document.getElementById('ormChart');
+  if(lift){
+    const pts=d.logs.filter(l=>l.lift===lift).map(l=>({date:l.date.slice(0,10),value:parseFloat(dispW(l.orm))}));
+    if(pts.length<2){ormEl.innerHTML='<div class="empty">Need at least 2 logs for a chart.</div>';}
+    else ormEl.innerHTML=lineChart(pts,unitStr());
+  } else {
+    ormEl.innerHTML='<div class="empty">Select a lift above.</div>';
+  }
+
+  // Volume chart
+  const volEl=document.getElementById('volChart');
+  if(!d.logs.length){volEl.innerHTML='<div class="empty">No logs yet.</div>';return;}
+  const weekVol={};
+  d.logs.forEach(l=>{
+    const date=new Date(l.date);
+    const startOfWeek=new Date(date);
+    startOfWeek.setDate(date.getDate()-date.getDay());
+    const wk=startOfWeek.toISOString().slice(0,10);
+    weekVol[wk]=(weekVol[wk]||0)+parseFloat(dispW(l.w))*l.r;
+  });
+  const weeks=Object.entries(weekVol).sort((a,b)=>a[0].localeCompare(b[0])).slice(-12);
+  volEl.innerHTML=barChart(weeks.map(([wk,vol])=>({label:wk.slice(5),value:Math.round(vol)})));
+}
+
+function lineChart(points,unit='lbs'){
+  if(!points||points.length<2)return'<div class="empty">Not enough data.</div>';
+  const W=560,H=180,pl=50,pr=20,pt=16,pb=36;
+  const iW=W-pl-pr,iH=H-pt-pb;
+  const vals=points.map(p=>p.value);
+  const minV=Math.min(...vals),maxV=Math.max(...vals);
+  const range=maxV-minV||1;
+  const xs=points.map((_,i)=>pl+(i/(points.length-1))*iW);
+  const ys=points.map(p=>pt+iH-((p.value-minV)/range)*iH);
+  const poly=xs.map((x,i)=>`${x},${ys[i]}`).join(' ');
+
+  // pick label indices
+  const labelIdxs=[0,...points.map((_,i)=>i).filter(i=>i>0&&i<points.length-1&&points.length>4?(i%(Math.ceil(points.length/4))===0):false),points.length-1];
+  const xLabels=labelIdxs.map(i=>`<text x="${xs[i]}" y="${H-6}" text-anchor="middle" font-size="9" fill="var(--muted)">${points[i].date.slice(5)}</text>`).join('');
+  const yVals=[minV,(minV+maxV)/2,maxV];
+  const yLabels=yVals.map(v=>{
+    const y=pt+iH-((v-minV)/range)*iH;
+    return `<text x="${pl-6}" y="${y+3.5}" text-anchor="end" font-size="9" fill="var(--muted)">${v.toFixed(0)}</text>`;
+  }).join('');
+  const dots=xs.map((x,i)=>`<circle cx="${x}" cy="${ys[i]}" r="3" fill="var(--head)"/>`).join('');
+
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" font-family="'DM Mono',monospace">
+    <line x1="${pl}" y1="${pt}" x2="${pl}" y2="${pt+iH}" stroke="var(--line)" stroke-width="1"/>
+    <line x1="${pl}" y1="${pt+iH}" x2="${pl+iW}" y2="${pt+iH}" stroke="var(--line)" stroke-width="1"/>
+    ${yLabels}${xLabels}
+    <polyline points="${poly}" fill="none" stroke="var(--head)" stroke-width="1.5" stroke-linejoin="round"/>
+    ${dots}
+  </svg>`;
+}
+
+function barChart(data){
+  if(!data||!data.length)return'<div class="empty">No data.</div>';
+  const W=560,H=160,pl=56,pr=16,pt=12,pb=28;
+  const iW=W-pl-pr,iH=H-pt-pb;
+  const vals=data.map(d=>d.value);
+  const maxV=Math.max(...vals)||1;
+  const bw=Math.max(4,(iW/data.length)-4);
+  const bars=data.map((d,i)=>{
+    const x=pl+(i/data.length)*iW+(iW/data.length-bw)/2;
+    const bh=(d.value/maxV)*iH;
+    const y=pt+iH-bh;
+    return `<rect x="${x}" y="${y}" width="${bw}" height="${bh}" fill="var(--head)" opacity=".75"/>
+      <text x="${x+bw/2}" y="${H-6}" text-anchor="middle" font-size="8" fill="var(--muted)">${d.label}</text>`;
+  }).join('');
+  const yLabels=[0,Math.round(maxV/2),maxV].map(v=>{
+    const y=pt+iH-((v/maxV)||0)*iH;
+    return `<text x="${pl-6}" y="${y+3}" text-anchor="end" font-size="9" fill="var(--muted)">${v>=1000?(v/1000).toFixed(1)+'k':v}</text>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" font-family="'DM Mono',monospace">
+    <line x1="${pl}" y1="${pt}" x2="${pl}" y2="${pt+iH}" stroke="var(--line)" stroke-width="1"/>
+    <line x1="${pl}" y1="${pt+iH}" x2="${pl+iW}" y2="${pt+iH}" stroke="var(--line)" stroke-width="1"/>
+    ${yLabels}${bars}
+  </svg>`;
+}
+
+// ── RECORDS ────────────────────────────────────────────────────────────────────
+function renderRecords(){
+  const d=D(), al=allLifts();
+  const used=[...new Set(d.logs.map(l=>l.lift))].sort();
+  const grid=document.getElementById('recordsGrid');
+  if(!used.length){grid.innerHTML='<div class="empty" style="padding:40px 20px">No lifts logged yet.</div>';return;}
+  grid.innerHTML=used.map(name=>{
+    const info=al[name], best=bestLog(name);
+    const rank=best&&d.bw?calcRank(best.orm,d.bw,info.t):'Unranked';
+    return `<div class="rec-card">
+      <div class="rec-lift">${name}</div>
+      <div class="rec-orm ${RK[rank]}">${best?dispW(best.orm)+' '+unitStr():'—'}</div>
+      <div class="rec-rank">${rank}${best?' · '+best.date.slice(0,10):''}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── TOOLS ──────────────────────────────────────────────────────────────────────
+function initTools(){
+  updatePlateBarOptions();
+  calcPlates();
+  calcWarmup();
+}
+
+function updatePlateBarOptions(){
+  const sel=document.getElementById('plateBar');
+  const unit=unitStr();
+  if(unit==='kg'){
+    sel.innerHTML=`<option value="20">20 kg (standard)</option><option value="15">15 kg (women's)</option><option value="10">10 kg (EZ bar)</option>`;
+  } else {
+    sel.innerHTML=`<option value="45">45 lbs (standard)</option><option value="35">35 lbs (women's)</option><option value="20">20 lbs (EZ bar)</option><option value="15">15 lbs (light)</option>`;
+  }
+}
+
+function calcPlates(){
+  const target=parseFloat(document.getElementById('plateTarget').value);
+  const bar=parseFloat(document.getElementById('plateBar').value);
+  const unit=unitStr();
+  const el=document.getElementById('plateResult');
+  if(!target||target<=bar){el.innerHTML='';return;}
+  const plates=unit==='kg'?[20,15,10,5,2.5,1.25]:[45,35,25,10,5,2.5];
+  let rem=(target-bar)/2;
+  const result=[];
+  for(const p of plates){
+    const count=Math.floor(rem/p+0.001);
+    if(count>0){result.push({p,count});rem-=p*count;}
+  }
+  rem=Math.round(rem*100)/100;
+
+  // SVG bar visual
+  const barSvg=plateSVG(result,unit);
+  const list=result.map(({p,count})=>`<span style="color:var(--head)">${p} ${unit} × ${count}</span>`).join(' + ');
+  el.innerHTML=`
+    ${barSvg}
+    <div class="plate-info" style="margin-top:12px">Per side: ${list||'none'}${rem>0?` <span style="color:var(--muted)">(+${rem.toFixed(2)} ${unit} off)</span>`:''}</div>
+    <div class="plate-info" style="margin-top:4px">Bar: <span>${bar} ${unit}</span> &nbsp;·&nbsp; Total: <span>${target} ${unit}</span></div>`;
+}
+
+function plateSVG(result,unit){
+  // simple horizontal bar visualization
+  const W=400,H=60,cy=30,barH=6,barW=320,cx=W/2;
+  const plateColors=['#888','#aaa','#bbb','#ccc','#ddd','#eee'];
+  let offsetX=0;
+  const plateRects=result.flatMap(({p,count},gi)=>{
+    const ph=Math.min(42,10+p*0.8);
+    const pw=Math.max(8,6+p*0.25);
+    return Array.from({length:count},(_,i)=>{
+      const x=offsetX; offsetX+=pw+2;
+      return {x,pw,ph,color:plateColors[gi]||'#999'};
+    });
+  });
+  const totalW=offsetX;
+  const startX=cx-barW/2;
+
+  const leftPlates=plateRects.map(({x,pw,ph,color})=>{
+    const lx=startX+barW/2-totalW-4-x-pw;
+    return `<rect x="${lx}" y="${cy-ph/2}" width="${pw}" height="${ph}" fill="${color}" stroke="var(--line)" stroke-width="1"/>`;
+  }).join('');
+  const rightPlates=plateRects.map(({x,pw,ph,color})=>{
+    const rx=startX+barW/2+4+x;
+    return `<rect x="${rx}" y="${cy-ph/2}" width="${pw}" height="${ph}" fill="${color}" stroke="var(--line)" stroke-width="1"/>`;
+  }).join('');
+
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:400px;height:auto;display:block;margin-top:16px">
+    <rect x="${startX}" y="${cy-barH/2}" width="${barW}" height="${barH}" fill="var(--muted)" rx="2"/>
+    ${leftPlates}${rightPlates}
+    <rect x="${startX+barW/2-20}" y="${cy-10}" width="40" height="20" fill="var(--sur)" stroke="var(--line)" stroke-width="1" rx="2"/>
+    <text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="8" fill="var(--muted)" font-family="'DM Mono',monospace">bar</text>
+  </svg>`;
+}
+
+function calcWarmup(){
+  const w=parseFloat(document.getElementById('warmupW').value);
+  const r=parseInt(document.getElementById('warmupR').value);
+  const el=document.getElementById('warmupResult');
+  if(!w||w<=0){el.innerHTML='';return;}
+  const unit=unitStr();
+  const step=unit==='kg'?2.5:5;
+  const round=v=>Math.round(v/step)*step;
+  const sets=[
+    {pct:40,reps:8,w:round(w*.4)},
+    {pct:60,reps:5,w:round(w*.6)},
+    {pct:75,reps:3,w:round(w*.75)},
+    {pct:90,reps:2,w:round(w*.9)},
+    {pct:100,reps:r||5,w:round(w),working:true},
+  ];
+  el.innerHTML=`<table class="warmup-table">
+    <thead><tr><th>%</th><th>Weight</th><th>Reps</th></tr></thead>
+    <tbody>${sets.map(s=>`<tr style="${s.working?'color:var(--head)':''}">
+      <td>${s.pct}%</td>
+      <td>${s.w} ${unit}${s.working?' <span style="color:var(--muted);font-size:10px">(working)</span>':''}</td>
+      <td>${s.reps}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+// ── PROFILE ────────────────────────────────────────────────────────────────────
+function renderProfile(){
+  const d=D();
+  const xp=d.xp||0;
+  const lvl=calcLevel(xp);
+  const next=nextLevel(xp);
+  const pct=next?Math.min(100,(xp-lvl.xp)/(next.xp-lvl.xp)*100):100;
+
+  document.getElementById('levelName').textContent=lvl.name;
+  document.getElementById('levelXp').textContent=next?`${xp} XP — ${next.xp-xp} until ${next.name}`:`${xp} XP — Max level`;
+  document.getElementById('levelBarFill').style.width=pct+'%';
+
+  document.getElementById('streakNum').textContent=calcStreak();
+  document.getElementById('totalSets').textContent=d.logs.length;
+  document.getElementById('totalPRs').textContent=d.logs.filter(l=>l.isPR).length;
+  document.getElementById('totalXP').textContent=xp;
+
+  const earned=new Set(d.badges||[]);
+  document.getElementById('badgesGrid').innerHTML=BADGE_DEFS.map(b=>`
+    <div class="badge ${earned.has(b.id)?'earned':'locked'}">
+      <div class="badge-name">${b.name}</div>
+      <div class="badge-desc">${b.desc}</div>
+      ${earned.has(b.id)?`<div class="badge-earned-label">✓ unlocked</div>`:''}
+    </div>`).join('');
+
+  updateHeaderXP();
+}
+
+function updateHeaderXP(){
+  const d=D();
+  const xp=d.xp||0;
+  const lvl=calcLevel(xp);
+  const next=nextLevel(xp);
+  const pct=next?Math.min(100,(xp-lvl.xp)/(next.xp-lvl.xp)*100):100;
+  document.getElementById('levelLabel').textContent=lvl.name;
+  document.getElementById('xpBarFill').style.width=pct+'%';
+}
+
+// ── MEASUREMENTS ───────────────────────────────────────────────────────────────
+function saveMeasurement(){
+  const fields=['mBW','mChest','mWaist','mHips','mArms','mShoulder','mThighs','mCalves','mNeck'];
+  const keys=['bw','chest','waist','hips','arms','shoulders','thighs','calves','neck'];
+  const snap={date:new Date().toISOString()};
+  let hasAny=false;
+  fields.forEach((id,i)=>{
+    const v=parseFloat(document.getElementById(id).value);
+    if(!isNaN(v)&&v>0){snap[keys[i]]=v;hasAny=true;}
+  });
+  if(!hasAny){toast('Enter at least one measurement');return;}
+  const d=D(); d.measurements=d.measurements||[]; d.measurements.push(snap); save(d);
+  fields.forEach(id=>document.getElementById(id).value='');
+  checkBadges();
+  renderMeasurements();
+  toast('Measurement saved');
+}
+
+function renderMeasurements(){
+  const d=D();
+  const snaps=[...(d.measurements||[])].reverse().slice(0,20);
+  const el=document.getElementById('measHistory');
+  if(!snaps.length){el.innerHTML='';return;}
+  const allKeys=['bw','chest','waist','hips','arms','shoulders','thighs','calves','neck'];
+  const labels={bw:'Weight',chest:'Chest',waist:'Waist',hips:'Hips',arms:'Arms',shoulders:'Shoulders',thighs:'Thighs',calves:'Calves',neck:'Neck'};
+  el.innerHTML=`<div class="section-title" style="margin-top:32px">History</div>`+
+  snaps.map(s=>`
+    <div style="padding:14px 0;border-bottom:1px solid var(--line)">
+      <div style="font-size:10px;color:var(--muted);letter-spacing:.06em;margin-bottom:8px">${s.date.slice(0,10)}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:16px 24px">${allKeys.filter(k=>s[k]).map(k=>`
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">${labels[k]}</div>
+        <div style="font-size:14px;color:var(--head)">${s[k]}</div></div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ── HISTORY ────────────────────────────────────────────────────────────────────
+function initHistory(){
   const used=[...new Set(D().logs.map(l=>l.lift))].sort();
   document.getElementById('histSel').innerHTML='<option value="">All lifts</option>'+used.map(n=>`<option>${n}</option>`).join('');
   renderHistory();
 }
-
-function renderHistory() {
+function renderHistory(){
   const d=D(), filter=document.getElementById('histSel').value;
   const al=allLifts();
-  const logs=[...d.logs].filter(l=>!filter||l.lift===filter).reverse().slice(0,150);
+  const logs=[...d.logs].filter(l=>!filter||l.lift===filter).reverse().slice(0,200);
   const el=document.getElementById('histContent');
-  if(!logs.length) { el.innerHTML='<div class="empty">No logs yet.</div>'; return; }
+  if(!logs.length){el.innerHTML='<div class="empty">No logs yet.</div>';return;}
   el.innerHTML=`<table class="hist-table">
-    <thead><tr>
-      <th>Date</th>${!filter?'<th>Lift</th>':''}
-      <th>Weight</th><th>Reps</th><th>1RM</th><th>Rank</th>
-    </tr></thead>
+    <thead><tr><th>Date</th>${!filter?'<th>Lift</th>':''}<th>Weight</th><th>Reps</th><th>1RM</th><th>Rank</th><th>Notes</th></tr></thead>
     <tbody>${logs.map(l=>{
-      const info=al[l.lift];
-      const rank=(d.bw&&info)?calcRank(l.orm,d.bw,info.t):'—';
+      const info=al[l.lift], rank=(d.bw&&info)?calcRank(l.orm,d.bw,info.t):'—';
       return `<tr>
         <td>${l.date.slice(0,10)}</td>${!filter?`<td>${l.lift}</td>`:''}
-        <td>${l.w} lbs</td><td>${l.r}</td>
-        <td>${l.orm.toFixed(1)} lbs</td>
+        <td>${dispW(l.w)} ${unitStr()}</td><td>${l.r}</td>
+        <td>${dispW(l.orm)} ${unitStr()}</td>
         <td class="${RK[rank]||''}">${rank}</td>
+        <td class="hist-note">${l.notes||''}</td>
       </tr>`;
     }).join('')}</tbody></table>`;
 }
 
-function saveBW() {
+// ── SETTINGS ───────────────────────────────────────────────────────────────────
+function saveBW(){
   const v=parseFloat(document.getElementById('setBW').value);
-  if(!v||v<=0) { toast('Invalid bodyweight'); return; }
-  const d=D(); d.bw=v; save(d); updateBWDisplay(); toast('Saved');
+  if(!v||v<=0){toast('Invalid bodyweight');return;}
+  const d=D(); d.bw=toLbs(v); save(d); updateBWDisplay(); toast('Saved');
 }
-
-function addCustom() {
+function addCustom(){
   const name=document.getElementById('cName').value.trim();
-  if(!name) { toast('Enter a name'); return; }
+  if(!name){toast('Enter a name');return;}
   const t=[1,2,3,4,5].map(i=>parseFloat(document.getElementById('t'+i).value));
-  if(t.some(isNaN)) { toast('Fill in all thresholds'); return; }
-  if(JSON.stringify(t)!==JSON.stringify([...t].sort((a,b)=>a-b))) { toast('Thresholds must be ascending'); return; }
+  if(t.some(isNaN)){toast('Fill in all thresholds');return;}
+  if(JSON.stringify(t)!==JSON.stringify([...t].sort((a,b)=>a-b))){toast('Thresholds must be ascending');return;}
   const d=D(); d.custom=d.custom||{}; d.custom[name]=t; save(d);
   toast(`"${name}" added`);
   document.getElementById('cName').value='';
   [1,2,3,4,5].forEach(i=>document.getElementById('t'+i).value='');
 }
-
-function exportData() {
+function exportData(){
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(D(),null,2)],{type:'application/json'}));
   a.download='gymrank.json'; a.click();
 }
-
-function clearData() {
-  if(confirm('Delete all data?')) { localStorage.removeItem('gr'); updateBWDisplay(); renderRanks(); toast('Cleared'); }
+function clearData(){
+  if(confirm('Delete all data? This cannot be undone.')){
+    localStorage.removeItem('gr'); updateBWDisplay(); renderRanks(); updateHeaderXP(); toast('Cleared');
+  }
 }
 
-function openBWModal() {
-  const d=D(); if(d.bw) document.getElementById('modalBW').value=d.bw;
+// ── Dark mode / Units ──────────────────────────────────────────────────────────
+function toggleDark(){
+  const d=D(); d.dark=!d.dark; save(d);
+  document.body.classList.toggle('dark',d.dark);
+  document.getElementById('darkBtn').textContent=d.dark?'light':'dark';
+  document.getElementById('darkToggle').checked=d.dark;
+}
+function toggleUnit(){
+  const d=D();
+  d.unit=d.unit==='lbs'?'kg':'lbs';
+  save(d); updateUnitLabels(); updateBWDisplay();
+  const activeTab=document.querySelector('.tab.active');
+  if(activeTab){const id=activeTab.id.replace('tab-','');const map={ranks:renderRanks,records:renderRecords,history:renderHistory,tools:initTools};if(map[id])map[id]();}
+}
+function updateUnitLabels(){
+  const u=unitStr();
+  document.querySelectorAll('.unit-label').forEach(el=>el.textContent=u);
+  document.getElementById('unitLabel').textContent=u;
+  document.getElementById('unitOther').textContent=u==='lbs'?'kg':'lbs';
+  document.getElementById('kgToggle').checked=u==='kg';
+}
+
+// ── BW Modal ───────────────────────────────────────────────────────────────────
+function openBWModal(){
+  const d=D(); if(d.bw) document.getElementById('modalBW').value=parseFloat(dispW(d.bw));
   document.getElementById('bwModal').classList.add('open');
   setTimeout(()=>document.getElementById('modalBW').focus(),80);
 }
-
-function closeBWModal() { document.getElementById('bwModal').classList.remove('open'); }
-
-function saveBWModal() {
+function closeBWModal(){document.getElementById('bwModal').classList.remove('open');}
+function saveBWModal(){
   const v=parseFloat(document.getElementById('modalBW').value);
-  if(!v||v<=0) { toast('Invalid value'); return; }
-  const d=D(); d.bw=v; save(d); closeBWModal(); updateBWDisplay(); renderRanks(); toast('Saved');
+  if(!v||v<=0){toast('Invalid value');return;}
+  const d=D(); d.bw=toLbs(v); save(d); closeBWModal(); updateBWDisplay(); renderRanks(); toast('Saved');
 }
+document.getElementById('bwModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeBWModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeBWModal();});
 
-document.getElementById('bwModal').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeBWModal(); });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeBWModal(); });
-
-function updateBWDisplay() {
+function updateBWDisplay(){
   const d=D();
-  document.getElementById('bwVal').textContent=d.bw?d.bw+' lbs':'not set';
+  document.getElementById('bwVal').textContent=d.bw?dispW(d.bw)+' '+unitStr():'not set';
 }
 
-function toast(msg) {
+// ── Toast ──────────────────────────────────────────────────────────────────────
+function toast(msg){
   document.querySelectorAll('.toast').forEach(e=>e.remove());
   const el=document.createElement('div'); el.className='toast'; el.textContent=msg;
-  document.body.appendChild(el); setTimeout(()=>el.remove(),2600);
+  document.body.appendChild(el); setTimeout(()=>el.remove(),2700);
 }
 
-updateBWDisplay();
-renderRanks();
-if(!D().bw) setTimeout(openBWModal,300);
+// ── Init ───────────────────────────────────────────────────────────────────────
+(function init(){
+  const d=D();
+  if(d.dark){document.body.classList.add('dark');document.getElementById('darkBtn').textContent='light';document.getElementById('darkToggle').checked=true;}
+  updateUnitLabels();
+  updateBWDisplay();
+  updateHeaderXP();
+  renderRanks();
+  if(!d.bw) setTimeout(openBWModal,300);
+})();
 </script>
 </body>
 </html>
