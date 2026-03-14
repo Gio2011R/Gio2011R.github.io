@@ -868,40 +868,52 @@ function calcPlates(){
 }
 
 function plateSVG(result,unit){
-  const W=460,H=90,cy=45,barH=8,cx=W/2,sleeve=22;
+  const W=600,H=100,cy=50,barH=6,cx=W/2,sleeveLen=80,collarW=6;
   const plateStyle={
-    45:{h:70,w:12,fill:'#555'},35:{h:60,w:11,fill:'#777'},
-    25:{h:52,w:10,fill:'#888'},20:{h:46,w:10,fill:'#3a6a9a'},
-    15:{h:38,w:9,fill:'#9a3a3a'},10:{h:32,w:8,fill:'#3a9a5a'},
-    5:{h:24,w:7,fill:'#999'},2.5:{h:18,w:6,fill:'#aaa'},1.25:{h:14,w:5,fill:'#bbb'},
+    45:{h:72,w:18,fill:'#444'},35:{h:62,w:16,fill:'#666'},
+    25:{h:52,w:14,fill:'#888'},20:{h:44,w:13,fill:'#2a5a8a'},
+    15:{h:36,w:12,fill:'#8a2a2a'},10:{h:28,w:10,fill:'#2a7a4a'},
+    5:{h:20,w:8,fill:'#777'},2.5:{h:15,w:7,fill:'#999'},1.25:{h:11,w:6,fill:'#bbb'},
   };
-  const sty=(p)=>plateStyle[p]||{h:Math.min(70,14+p),w:Math.max(5,6),fill:'#888'};
-
+  const sty=(p)=>plateStyle[p]||{h:Math.min(72,14+p),w:Math.max(6,8),fill:'#888'};
   const plates=result.flatMap(({p,count})=>Array.from({length:count},()=>({p,...sty(p)})));
 
-  // build plates outward from sleeve, same offset for both sides
+  const gap=3;
   let off=0;
   const leftPlates=plates.map(pl=>{
-    const x=cx-sleeve-off-pl.w;
-    off+=pl.w+2;
-    return `<rect x="${x}" y="${cy-pl.h/2}" width="${pl.w}" height="${pl.h}" fill="${pl.fill}" rx="1"/>`;
+    const x=cx-sleeveLen-off-pl.w;
+    off+=pl.w+gap;
+    return `<rect x="${x}" y="${cy-pl.h/2}" width="${pl.w}" height="${pl.h}" fill="${pl.fill}" rx="1.5"/>`;
   }).join('');
 
   off=0;
   const rightPlates=plates.map(pl=>{
-    const x=cx+sleeve+off;
-    off+=pl.w+2;
-    return `<rect x="${x}" y="${cy-pl.h/2}" width="${pl.w}" height="${pl.h}" fill="${pl.fill}" rx="1"/>`;
+    const x=cx+sleeveLen+off;
+    off+=pl.w+gap;
+    return `<rect x="${x}" y="${cy-pl.h/2}" width="${pl.w}" height="${pl.h}" fill="${pl.fill}" rx="1.5"/>`;
   }).join('');
 
-  const totalW=plates.reduce((s,pl)=>s+pl.w+2,0);
-  const barLeft=cx-sleeve-totalW-20;
-  const barRight=cx+sleeve+totalW+20;
+  const totalPlateW=plates.reduce((s,pl)=>s+pl.w+gap,0);
+  const barLeft=Math.max(0, cx-sleeveLen-totalPlateW-28);
+  const barRight=Math.min(W, cx+sleeveLen+totalPlateW+28);
 
-  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:460px;height:auto;display:block;margin-top:16px">
-    <rect x="${barLeft}" y="${cy-barH/2}" width="${barRight-barLeft}" height="${barH}" fill="var(--muted)" rx="3"/>
+  // collar blocks just outside the plates
+  const lCollar=cx-sleeveLen-totalPlateW;
+  const rCollar=cx+sleeveLen+totalPlateW;
+
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:600px;height:auto;display:block;margin-top:16px">
+    <!-- bar -->
+    <rect x="${barLeft}" y="${cy-barH/2}" width="${barRight-barLeft}" height="${barH}" fill="#aaa" rx="3"/>
+    <!-- sleeves (slightly thicker) -->
+    <rect x="${cx-sleeveLen}" y="${cy-barH/2-2}" width="${sleeveLen}" height="${barH+4}" fill="#999" rx="2"/>
+    <rect x="${cx}" y="${cy-barH/2-2}" width="${sleeveLen}" height="${barH+4}" fill="#999" rx="2"/>
+    <!-- plates -->
     ${leftPlates}${rightPlates}
-    <rect x="${cx-18}" y="${cy-13}" width="36" height="26" fill="var(--sur)" stroke="var(--line)" stroke-width="1" rx="2"/>
+    <!-- collars -->
+    <rect x="${lCollar-collarW}" y="${cy-14}" width="${collarW}" height="28" fill="#555" rx="1"/>
+    <rect x="${rCollar}" y="${cy-14}" width="${collarW}" height="28" fill="#555" rx="1"/>
+    <!-- center knurl label -->
+    <rect x="${cx-22}" y="${cy-11}" width="44" height="22" fill="var(--sur)" stroke="var(--line)" stroke-width="1" rx="2"/>
     <text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="8" fill="var(--muted)" font-family="'DM Mono',monospace">bar</text>
   </svg>`;
 }
