@@ -868,54 +868,40 @@ function calcPlates(){
 }
 
 function plateSVG(result,unit){
-  const W=420,H=90,cy=45,barH=8,cx=W/2;
-  // plate appearance by weight
+  const W=460,H=90,cy=45,barH=8,cx=W/2,sleeve=22;
   const plateStyle={
-    45:{h:70,w:12,fill:'#555'},
-    35:{h:60,w:11,fill:'#777'},
-    25:{h:52,w:10,fill:'#888'},
-    20:{h:46,w:10,fill:'#3a6a9a'},
-    15:{h:38,w:9,fill:'#9a3a3a'},
-    10:{h:32,w:8,fill:'#3a9a5a'},
-    5: {h:24,w:7,fill:'#999'},
-    2.5:{h:18,w:6,fill:'#aaa'},
-    1.25:{h:14,w:5,fill:'#bbb'},
+    45:{h:70,w:12,fill:'#555'},35:{h:60,w:11,fill:'#777'},
+    25:{h:52,w:10,fill:'#888'},20:{h:46,w:10,fill:'#3a6a9a'},
+    15:{h:38,w:9,fill:'#9a3a3a'},10:{h:32,w:8,fill:'#3a9a5a'},
+    5:{h:24,w:7,fill:'#999'},2.5:{h:18,w:6,fill:'#aaa'},1.25:{h:14,w:5,fill:'#bbb'},
   };
-  const defaultStyle=(p)=>({h:Math.min(70,14+p*1.2),w:Math.max(5,5+p*0.15),fill:'#888'});
+  const sty=(p)=>plateStyle[p]||{h:Math.min(70,14+p),w:Math.max(5,6),fill:'#888'};
 
-  // build flat plate list
-  const plates=result.flatMap(({p,count})=>Array.from({length:count},()=>{
-    const s=plateStyle[p]||defaultStyle(p);
-    return {p,...s};
-  }));
+  const plates=result.flatMap(({p,count})=>Array.from({length:count},()=>({p,...sty(p)})));
 
-  // calculate total width needed per side
-  const totalW=plates.reduce((s,pl)=>s+pl.w+2,0);
-  const barHalf=Math.max(totalW+30,100);
-  const barW=barHalf*2;
-  const startX=cx-barHalf;
-
-  // draw plates from center outward
-  let offsetX=0;
+  // build plates outward from sleeve, same offset for both sides
+  let off=0;
   const leftPlates=plates.map(pl=>{
-    const lx=cx-offsetX-pl.w-2;
-    offsetX+=pl.w+2;
-    return `<rect x="${lx}" y="${cy-pl.h/2}" width="${pl.w}" height="${pl.h}" fill="${pl.fill}" rx="1"/>
-      <text x="${lx+pl.w/2}" y="${cy+3}" text-anchor="middle" font-size="7" fill="white" font-family="'DM Mono',monospace" transform="rotate(-90,${lx+pl.w/2},${cy})">${pl.p}</text>`;
+    const x=cx-sleeve-off-pl.w;
+    off+=pl.w+2;
+    return `<rect x="${x}" y="${cy-pl.h/2}" width="${pl.w}" height="${pl.h}" fill="${pl.fill}" rx="1"/>`;
   }).join('');
 
-  offsetX=0;
+  off=0;
   const rightPlates=plates.map(pl=>{
-    const rx=cx+offsetX+2;
-    offsetX+=pl.w+2;
-    return `<rect x="${rx}" y="${cy-pl.h/2}" width="${pl.w}" height="${pl.h}" fill="${pl.fill}" rx="1"/>
-      <text x="${rx+pl.w/2}" y="${cy+3}" text-anchor="middle" font-size="7" fill="white" font-family="'DM Mono',monospace" transform="rotate(-90,${rx+pl.w/2},${cy})">${pl.p}</text>`;
+    const x=cx+sleeve+off;
+    off+=pl.w+2;
+    return `<rect x="${x}" y="${cy-pl.h/2}" width="${pl.w}" height="${pl.h}" fill="${pl.fill}" rx="1"/>`;
   }).join('');
 
-  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:480px;height:auto;display:block;margin-top:16px">
-    <rect x="${startX}" y="${cy-barH/2}" width="${barW}" height="${barH}" fill="var(--muted)" rx="3"/>
+  const totalW=plates.reduce((s,pl)=>s+pl.w+2,0);
+  const barLeft=cx-sleeve-totalW-20;
+  const barRight=cx+sleeve+totalW+20;
+
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:460px;height:auto;display:block;margin-top:16px">
+    <rect x="${barLeft}" y="${cy-barH/2}" width="${barRight-barLeft}" height="${barH}" fill="var(--muted)" rx="3"/>
     ${leftPlates}${rightPlates}
-    <rect x="${cx-18}" y="${cy-12}" width="36" height="24" fill="var(--sur)" stroke="var(--line)" stroke-width="1" rx="2"/>
+    <rect x="${cx-18}" y="${cy-13}" width="36" height="26" fill="var(--sur)" stroke="var(--line)" stroke-width="1" rx="2"/>
     <text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="8" fill="var(--muted)" font-family="'DM Mono',monospace">bar</text>
   </svg>`;
 }
